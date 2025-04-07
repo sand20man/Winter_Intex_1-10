@@ -1,10 +1,17 @@
 import './App.css';
-import PosterWall from './components/PosterWall';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MoviePage from './pages/MoviePage';
+import PrivacyPage from './pages/PrivacyPage';
 
 function App() {
   return (
     <>
-      <PosterWall />
+      <Router>
+        <Routes>
+          <Route path="/" element={<MoviePage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+        </Routes>
+      </Router>
     </>
   );
 }
