@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Intex_Winter.Data;
+using Intex_Winter.Models;
 using Intex_Winter.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// MoviesDbContext → Azure SQL (use secret manager/env var)
+builder.Services.AddDbContext<MoviesDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MovieConnection")));
 
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>  
-    options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
+// ApplicationDbContext → local SQLite (for login/auth, not deployed)
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()  
     .AddEntityFrameworkStores<ApplicationDbContext>();
