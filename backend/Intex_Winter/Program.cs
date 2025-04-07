@@ -14,10 +14,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<MoviesDbContext>(options =>  
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnection")));
+// MoviesDbContext → Azure SQL (use secret manager/env var)
+builder.Services.AddDbContext<MoviesDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MovieConnection")));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>  
+// ApplicationDbContext → local SQLite (for login/auth, not deployed)
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()  

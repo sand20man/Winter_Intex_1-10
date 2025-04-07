@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Intex_Winter")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad4921e400e1a35b6a7a9c70740654d71f31a1ce")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c7da219ca302d19c4a9b36f39813172522c13bf")]
 [assembly: System.Reflection.AssemblyProductAttribute("Intex_Winter")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Intex_Winter")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
