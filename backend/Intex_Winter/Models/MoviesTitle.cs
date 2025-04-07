@@ -44,83 +44,83 @@ public partial class MoviesTitle
 
     public int? Adventure { get; set; }
 
-    [Column("Anime Series International TV Shows")]
+    [Column("Anime_Series_International_TV_Shows")]
     public int? AnimeSeriesInternationalTvShows { get; set; }
 
-    [Column("British TV Shows Docuseries International TV Shows")]
+    [Column("British_TV_Shows_Docuseries_International_TV_Shows")]
     public int? BritishTvShowsDocuseriesInternationalTvShows { get; set; }
 
     public int? Children { get; set; }
 
     public int? Comedies { get; set; }
 
-    [Column("Comedies Dramas International Movies")]
+    [Column("Comedies_Dramas_International_Movies")]
     public int? ComediesDramasInternationalMovies { get; set; }
 
-    [Column("Comedies International Movies")]
+    [Column("Comedies_International_Movies")]
     public int? ComediesInternationalMovies { get; set; }
 
-    [Column("Comedies Romantic Movies")]
+    [Column("Comedies_Romantic_Movies")]
     public int? ComediesRomanticMovies { get; set; }
 
-    [Column("Crime TV Shows Docuseries")]
+    [Column("Crime_TV_Shows_Docuseries")]
     public int? CrimeTvShowsDocuseries { get; set; }
 
     public int? Documentaries { get; set; }
 
-    [Column("Documentaries International Movies")]
+    [Column("Documentaries_International_Movies")]
     public int? DocumentariesInternationalMovies { get; set; }
 
     public int? Docuseries { get; set; }
 
     public int? Dramas { get; set; }
 
-    [Column("Dramas International Movies")]
+    [Column("Dramas_International_Movies")]
     public int? DramasInternationalMovies { get; set; }
 
-    [Column("Dramas Romantic Movies")]
+    [Column("Dramas_Romantic_Movies")]
     public int? DramasRomanticMovies { get; set; }
 
-    [Column("Family Movies")]
+    [Column("Family_Movies")]
     public int? FamilyMovies { get; set; }
 
     public int? Fantasy { get; set; }
 
-    [Column("Horror Movies")]
+    [Column("Horror_Movies")]
     public int? HorrorMovies { get; set; }
 
-    [Column("International Movies Thrillers")]
+    [Column("International_Movies_Thrillers")]
     public int? InternationalMoviesThrillers { get; set; }
 
-    [Column("International TV Shows Romantic TV Shows TV Dramas")]
-    public int? InternationalTvShowsRomanticTvShowsTvDramas { get; set; }
-
-    [Column("Kids' TV")]
+    [Column("International_TV_Shows_Romantic_TV_Shows_TV_Dramas")]
+    public int? InternationalTVShowsRomanticTVDramas { get; set; }
+    
+    [Column("Kids_TV")]
     public int? KidsTv { get; set; }
 
-    [Column("Language TV Shows")]
+    [Column("Language_TV_Shows")]
     public int? LanguageTvShows { get; set; }
 
     public int? Musicals { get; set; }
 
-    [Column("Nature TV")]
+    [Column("Nature_TV")]
     public int? NatureTv { get; set; }
 
-    [Column("Reality TV")]
+    [Column("Reality_TV")]
     public int? RealityTv { get; set; }
 
     public int? Spirituality { get; set; }
 
-    [Column("TV Action")]
+    [Column("TV_Action")]
     public int? TvAction { get; set; }
 
-    [Column("TV Comedies")]
+    [Column("TV_Comedies")]
     public int? TvComedies { get; set; }
 
-    [Column("TV Dramas")]
+    [Column("TV_Dramas")]
     public int? TvDramas { get; set; }
 
-    [Column("Talk Shows TV Comedies")]
+    [Column("Talk_Shows_TV_Comedies")]
     public int? TalkShowsTvComedies { get; set; }
 
     public int? Thrillers { get; set; }
