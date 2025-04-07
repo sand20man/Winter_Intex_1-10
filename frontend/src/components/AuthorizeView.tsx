@@ -11,7 +11,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true); // add a loading state
   //const navigate = useNavigate();
-  let emptyuser: User = { email: '' };
+  const emptyuser: User = { email: '' };
 
   const [user, setUser] = useState(emptyuser);
 
@@ -37,6 +37,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
           throw new Error('Invalid user session');
         }
       } catch (error) {
+        console.log('Error authorizing', error);
         setAuthorized(false);
       } finally {
         setLoading(false);
