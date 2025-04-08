@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj": {}
+    "/Users/jackestes/Documents/Current Semester/INTEX/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj": {}
   },
   "projects": {
-    "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj": {
+    "/Users/jackestes/Documents/Current Semester/INTEX/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj",
+        "projectUniqueName": "/Users/jackestes/Documents/Current Semester/INTEX/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
         "projectName": "Intex_Winter",
-        "projectPath": "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj",
-        "packagesPath": "/Users/colemansandy/.nuget/packages/",
-        "outputPath": "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/obj/",
+        "projectPath": "/Users/jackestes/Documents/Current Semester/INTEX/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
+        "packagesPath": "/Users/jackestes/.nuget/packages/",
+        "outputPath": "/Users/jackestes/Documents/Current Semester/INTEX/Winter_Intex_1-10/backend/Intex_Winter/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/colemansandy/.nuget/NuGet/NuGet.Config"
+          "/Users/jackestes/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -103,7 +103,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/Users/jackestes/.dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
