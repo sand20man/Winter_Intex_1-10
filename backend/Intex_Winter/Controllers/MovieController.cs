@@ -16,9 +16,15 @@ namespace Intex_Winter.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllMovies()
+        public IActionResult GetAllMovies(int skip = 0, int take = 20)
         {
-            var movies = _context.MoviesTitles.ToList();
+            var movies = _context.MoviesTitles
+                .AsNoTracking()
+                .OrderBy(m => m.Title)
+                .Skip(skip)
+                .Take(take)
+                .ToList();
+            
             return Ok(movies);
         }
         
