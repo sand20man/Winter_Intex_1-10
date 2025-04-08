@@ -76,6 +76,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
+builder.Services.AddSingleton<BlobService>();
+
 
 var app = builder.Build();
 
@@ -98,7 +100,7 @@ app.UseAuthorization();
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
-    
+
     // Ensure authentication cookie is removed
     context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
 
@@ -118,3 +120,10 @@ app.MapGet("/pingauth", (ClaimsPrincipal user) =>
 }).RequireAuthorization();
 
 app.Run();
+return;
+
+void ConfigureServices(IServiceCollection services)
+{
+    services.AddSingleton<BlobService>();
+    services.AddControllersWithViews(); // or AddRazorPages();
+}
