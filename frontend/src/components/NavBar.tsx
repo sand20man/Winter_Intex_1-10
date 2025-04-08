@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  onSearchChange,
+  onSearchChange = () => {},
   homePageBool = false,
 }) => {
   const navigate = useNavigate();

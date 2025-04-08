@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchSingle } from '../api/MovieAPI';
+import { fetchSingle, getPosterUrl } from '../api/MovieAPI';
 import NavBar from './NavBar';
 import './Details.css';
 
@@ -65,7 +65,7 @@ const Details: React.FC = () => {
 
         <div className="poster-container">
           <img
-            src={`/posters/${movie.title}.jpg`}
+            src={getPosterUrl(movie.title)}
             alt={`${movie.title} poster`}
             className="movie-poster"
             onError={(e) => {

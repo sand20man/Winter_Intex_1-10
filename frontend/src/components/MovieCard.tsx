@@ -1,14 +1,14 @@
 import React from 'react';
 import './MovieCard.css';
 import { useNavigate } from 'react-router-dom';
+import { getPosterUrl } from '../api/MovieAPI';
 
 interface MovieCardProps {
   showId: string;
   title: string;
-  posterUrl: string;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ showId, title, posterUrl }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ showId, title }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -23,7 +23,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ showId, title, posterUrl }) => {
       key={showId}
     >
       <img
-        src={posterUrl}
+        src={getPosterUrl(title)}
         alt={title}
         className="movie-poster"
         onError={(e) => {
