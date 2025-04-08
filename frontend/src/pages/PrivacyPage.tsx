@@ -1,10 +1,13 @@
+import Footer from '../components/Footer';
 import NavBar from '../components/NavBar';
+import PrivacyPolicy from '../components/PrivacyPolicy';
 
 function PrivacyPage() {
   return (
     <>
       <NavBar />
-      <h1>Privacy Privacy Yadda Yadda</h1>
+      <PrivacyPolicy />
+      <Footer />
     </>
   );
 }

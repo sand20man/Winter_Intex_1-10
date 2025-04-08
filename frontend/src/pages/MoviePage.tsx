@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import MovieCard from '../components/MovieCard';
 import MovieCarousel from '../components/MovieCarousel';
+import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
 import { fetchSearch } from '../api/MovieAPI';
@@ -37,6 +38,7 @@ function MoviePage() {
         posterUrl={'./posters/The Incredibles 2.jpg'}
       />
       <MovieCarousel movies={movies} />
+      <Footer />
     </>
   );
 }
