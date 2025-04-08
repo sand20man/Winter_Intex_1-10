@@ -36,6 +36,23 @@ export const fetchGenre = async (genre: string): Promise<Movie[]> => {
   }
 };
 
+export const fetchAllGenres = async (): Promise<string[]> => {
+  try {
+    const response = await fetch(`${api_URL}/get_genres`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch movies');
+    }
+    const data: string[] = await response.json();
+    return data as string[];
+  } catch (error) {
+    console.error('Error fetching movies:', error);
+    throw error;
+  }
+};
+
 export const fetchSingle = async (showId: string): Promise<Movie> => {
   try {
     const response = await fetch(`${api_URL}/${showId}`, {

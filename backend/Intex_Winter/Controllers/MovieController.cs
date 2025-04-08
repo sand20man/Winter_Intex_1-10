@@ -63,12 +63,34 @@ namespace Intex_Winter.Controllers
 
             foreach (var genre in genreList)
             {
-                query = query.Where(m => m.Genre.Contains(genre));
+                query = query.Where(m => m.Genre.Contains(genre)).Take(20);
             }
 
             var results = await query.ToListAsync();
 
             return Ok(results);
+        }
+        
+        [HttpGet("get_genres")]
+        public async Task<IActionResult> GetGenres()
+        {
+            var query = _context.MoviesTitles.Select(m => m.Genre);
+            var results = await query.ToListAsync();
+
+            var individualResults = results
+                .Where(g => !string.IsNullOrWhiteSpace(g))
+                .SelectMany(g => g.Split(",", StringSplitOptions.RemoveEmptyEntries))
+                .Select(g => g.Trim())
+                .Distinct()
+                .ToList();
+
+            Console.WriteLine("results: ");
+            foreach (var result in individualResults)
+            {
+                Console.WriteLine(result);
+            }
+
+            return Ok(individualResults);
         }
 
         [HttpGet("recommender1")]
@@ -97,7 +119,32 @@ namespace Intex_Winter.Controllers
             }
         }
 
+        [HttpGet("recommender2")]
+        public async Task<IActionResult> GetUserRecommendedMovies([FromQuery] int? userId)
+        {
+            if (userId == null)
+            {
+                return BadRequest("Please provide a user to be recommended on.");
+            }
 
+            try
+            {
+                var recommendationRecord = await _context.UserRatingRecommenders
+                    .FirstOrDefaultAsync(r => r.index == userId);
+
+                if (recommendationRecord == null)
+                {
+                    return NotFound($"No recommendations found for userId: {userId}");
+                }
+
+                return Ok(recommendationRecord);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        
 
     }
 }
