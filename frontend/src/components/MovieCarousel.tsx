@@ -21,7 +21,7 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({ movies }) => {
             key={movie.showId}
             showId={movie.showId}
             title={movie.title}
-            posterUrl={movie.posterUrl}
+            // posterUrl={movie.posterUrl}
           />
         ))}
       </div>

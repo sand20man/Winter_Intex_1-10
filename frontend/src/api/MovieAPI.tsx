@@ -52,3 +52,7 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
     throw error;
   }
 };
+
+export const getPosterUrl = (title: string) => {
+  return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(title)}.jpg`;
+};

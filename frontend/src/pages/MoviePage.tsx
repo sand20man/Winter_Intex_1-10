@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
 import { fetchGenre, fetchSearch } from '../api/MovieAPI';
+import '../components/MovieCard.css';
 
 function MoviePage() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -71,10 +72,19 @@ function MoviePage() {
               posterUrl: `/Movie Posters/${m.title}.jpg`,
             }))}
           />
+          <br />
+          <br />
+          <h2 className="category-heading">Recommender</h2>
+          <MovieCarousel
+            movies={genre.map((m) => ({
+              showId: m.showId,
+              title: m.title,
+              posterUrl: `/Movie Posters/${m.title}.jpg`,
+            }))}
+          />
+          <Footer />
         </>
       )}
-
-      <Footer />
     </>
   );
 }

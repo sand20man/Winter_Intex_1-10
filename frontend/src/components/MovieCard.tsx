@@ -1,14 +1,14 @@
 import React from 'react';
 import './MovieCard.css';
 import { useNavigate } from 'react-router-dom';
+import { getPosterUrl } from '../api/MovieAPI';
 
 interface MovieCardProps {
   showId: string;
   title: string;
-  posterUrl: string;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ showId, title, posterUrl }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ showId, title }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -22,7 +22,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ showId, title, posterUrl }) => {
       style={{ cursor: 'pointer' }}
       key={showId}
     >
-      <img src={posterUrl} alt={title} className="movie-poster" />
+      <img
+        src={getPosterUrl(title)}
+        alt={title}
+        className="movie-poster"
+        onError={(e) => {
+          (e.target as HTMLImageElement).src = '/logos/CameraLogo.png';
+        }}
+      />
       <h4 className="movie-title">{title}</h4>
     </div>
   );
