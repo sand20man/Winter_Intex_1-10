@@ -3,7 +3,7 @@ import MovieCarousel from '../components/MovieCarousel';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
-import { fetchGenre, fetchSearch } from '../api/MovieAPI';
+import { fetchGenre, getPosterUrl, fetchSearch } from '../api/MovieAPI';
 import '../components/MovieCard.css';
 
 function MoviePage() {
@@ -58,7 +58,7 @@ function MoviePage() {
             movies={searchResults.map((m) => ({
               showId: m.showId,
               title: m.title,
-              posterUrl: `posters/${m.title}.jpg`,
+              posterUrl: getPosterUrl(m.title),
             }))}
           />
         </>
@@ -69,22 +69,22 @@ function MoviePage() {
             movies={genre.map((m) => ({
               showId: m.showId,
               title: m.title,
-              posterUrl: `/Movie Posters/${m.title}.jpg`,
+              posterUrl: getPosterUrl(m.title),
             }))}
           />
-          <br />
-          <br />
-          <h2 className="category-heading">Recommender</h2>
-          <MovieCarousel
-            movies={genre.map((m) => ({
-              showId: m.showId,
-              title: m.title,
-              posterUrl: `/Movie Posters/${m.title}.jpg`,
-            }))}
-          />
-          <Footer />
         </>
       )}
+      <br />
+      <br />
+      <h2 className="category-heading">Recommender</h2>
+      <MovieCarousel
+        movies={genre.map((m) => ({
+          showId: m.showId,
+          title: m.title,
+          posterUrl: getPosterUrl(m.title),
+        }))}
+      />
+      <Footer />
     </>
   );
 }
