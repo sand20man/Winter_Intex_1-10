@@ -37,7 +37,13 @@ function MoviePage() {
         title={'The Incredibles 2'}
         posterUrl={'./posters/The Incredibles 2.jpg'}
       />
-      <MovieCarousel movies={movies} />
+      <MovieCarousel
+        movies={movies.map((m, i) => ({
+          id: i, // or use a real unique ID if available
+          title: m.title,
+          posterUrl: `/posters/${m.title}.jpg`,
+        }))}
+      />
       <Footer />
     </>
   );

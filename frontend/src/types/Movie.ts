@@ -9,6 +9,7 @@ export interface Movie {
   rating: string;
   duration: string;
   description: string;
+  genre: string;
 
   // Genre flags (0 or 1)
   action: number;
