@@ -1,0 +1,59 @@
+.details-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 2rem;
+  background-color: #121212;
+  color: #f0f0f0;
+  min-height: 80vh;
+}
+
+.movie-info {
+  flex: 2;
+  padding-right: 2rem;
+}
+
+.movie-detail-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.release-year {
+  font-weight: 300;
+  color: #bbbbbb;
+}
+
+.description {
+  margin-top: 1.5rem;
+  line-height: 1.6;
+  color: #dddddd;
+}
+
+.poster-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.movie-poster {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.cast-list {
+  margin-top: 0.5rem;
+  margin-left: 1rem;
+  list-style-type: disc;
+  color: #dddddd;
+  padding-left: 1.5rem;
+}

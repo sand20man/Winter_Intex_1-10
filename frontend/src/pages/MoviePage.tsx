@@ -3,29 +3,18 @@ import MovieCarousel from '../components/MovieCarousel';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
-import { fetchGenre, fetchSearch } from '../api/MovieAPI';
+import { fetchGenre } from '../api/MovieAPI';
+import '../components/MovieCard.css';
+import { useLocation } from 'react-router-dom';
 
 function MoviePage() {
-  const [searchQuery, setSearchQuery] = useState<string>();
-  const [searchResults, setSearchResult] = useState<Movie[]>([]);
   const [genre, setGenre] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const state = location.state as { searchResults?: Movie[]; query?: string };
 
-  useEffect(() => {
-    const searchMovies = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchSearch(searchQuery); //ignore the error
-        setSearchResult(data);
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    searchMovies();
-  }, [searchQuery]);
+  const moviesToShow = state?.searchResults;
 
   useEffect(() => {
     const loadMovies = async () => {
@@ -48,17 +37,34 @@ function MoviePage() {
 
   return (
     <>
-      <Navbar onSearchChange={setSearchQuery} />
-      <h2 className="text-xl font-bold ml-4">Search Results</h2>
-      <MovieCarousel
-        movies={searchResults.map((m) => ({
-          showId: m.showId, // or use a real unique ID if available
-          title: m.title,
-          posterUrl: `posters/${m.title}.jpg`,
-        }))}
-      />
+      <Navbar />
+      {moviesToShow ? (
+        <>
+          <h2 className="category-heading">Search Results</h2>
+          <MovieCarousel
+            movies={moviesToShow.map((m) => ({
+              showId: m.showId, // or use a real unique ID if available
+              title: m.title,
+              posterUrl: `posters/${m.title}.jpg`,
+            }))}
+          />
+        </>
+      ) : (
+        <>
+          <br />
+          <h2 className="category-heading">Thrillers (HardCoded)</h2>
+          <MovieCarousel
+            movies={genre.map((m) => ({
+              showId: m.showId,
+              title: m.title,
+              posterUrl: `/Movie Posters/${m.title}.jpg`,
+            }))}
+          />
+        </>
+      )}
       <br />
-      <h2 className="text-xl font-bold ml-4">Thrillers (HardCoded)</h2>
+      <br />
+      <h2 className="category-heading">Recommender</h2>
       <MovieCarousel
         movies={genre.map((m) => ({
           showId: m.showId,
