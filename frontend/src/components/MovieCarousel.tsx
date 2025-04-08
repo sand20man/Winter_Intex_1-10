@@ -3,7 +3,7 @@ import MovieCard from './MovieCard';
 import './MovieCarousel.css';
 
 export interface CarouselMovie {
-  id: number;
+  showId: string;
   title: string;
   posterUrl: string;
 }
@@ -15,13 +15,13 @@ interface MovieCarouselProps {
 const MovieCarousel: React.FC<MovieCarouselProps> = ({ movies }) => {
   return (
     <div className="carousel-container">
-      <h2 className="carousel-title">Recommended for You</h2>
       <div className="carousel-track">
         {movies.map((movie) => (
           <MovieCard
-            key={movie.id}
+            key={movie.showId}
+            showId={movie.showId}
             title={movie.title}
-            posterUrl={movie.posterUrl} // ← Use the actual property
+            posterUrl={movie.posterUrl}
           />
         ))}
       </div>
