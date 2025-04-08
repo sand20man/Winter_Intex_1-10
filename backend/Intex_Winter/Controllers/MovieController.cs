@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Intex_Winter.Models;
 using Microsoft.EntityFrameworkCore;
@@ -68,7 +71,32 @@ namespace Intex_Winter.Controllers
             return Ok(results);
         }
 
-        
+        [HttpGet("recommender1")]
+        public async Task<IActionResult> GetRecommendedMovies([FromQuery] string showId)
+        {
+            if (string.IsNullOrEmpty(showId))
+            {
+                return BadRequest("Please provide a movie to be recommended on.");
+            }
+
+            try
+            {
+                var recommendationRecord = await _context.RatingRecommenders
+                    .FirstOrDefaultAsync(r => r.ShowId == showId);
+
+                if (recommendationRecord == null)
+                {
+                    return NotFound($"No recommendations found for showId: {showId}");
+                }
+
+                return Ok(recommendationRecord);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
 
     }

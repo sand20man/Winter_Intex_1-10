@@ -62,6 +62,16 @@ function MoviePage() {
           />
         </>
       )}
+      <br />
+      <br />
+      <h2 className="category-heading">Recommender</h2>
+      <MovieCarousel
+        movies={genre.map((m) => ({
+          showId: m.showId,
+          title: m.title,
+          posterUrl: `/Movie Posters/${m.title}.jpg`,
+        }))}
+      />
       <Footer />
     </>
   );
