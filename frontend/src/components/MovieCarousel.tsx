@@ -2,14 +2,14 @@ import React from 'react';
 import MovieCard from './MovieCard';
 import './MovieCarousel.css';
 
-interface Movie {
+export interface CarouselMovie {
   id: number;
   title: string;
   posterUrl: string;
 }
 
 interface MovieCarouselProps {
-  movies: Movie[];
+  movies: CarouselMovie[];
 }
 
 const MovieCarousel: React.FC<MovieCarouselProps> = ({ movies }) => {
@@ -21,7 +21,7 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({ movies }) => {
           <MovieCard
             key={movie.id}
             title={movie.title}
-            posterUrl={`/posters/${movie.title}.jpg`}
+            posterUrl={movie.posterUrl} // ← Use the actual property
           />
         ))}
       </div>
