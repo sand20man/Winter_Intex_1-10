@@ -1,5 +1,9 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Intex_Winter.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
@@ -29,6 +33,9 @@ namespace Intex_Winter.Controllers
                 .Take(pageSize)
                 .ToList();
 
+<<<<<<< HEAD
+            return Ok(movies);
+=======
             var result = new
             {
                 Movies = movies,
@@ -133,8 +140,9 @@ namespace Intex_Winter.Controllers
                 .FirstOrDefault();
 
             return Ok(latestId?.Original ?? "s0000");
+>>>>>>> origin/lara
         }
-        
+
         [HttpGet("{id}")]
         public IActionResult GetMovieById(string id)
         {
@@ -152,7 +160,7 @@ namespace Intex_Winter.Controllers
                 .ToList();
             return Ok(results);
         }
-        
+
         [HttpGet("genre_search")]
         public async Task<IActionResult> SearchMoviesByGenres([FromQuery] string genres)
         {
@@ -167,7 +175,7 @@ namespace Intex_Winter.Controllers
 
             foreach (var genre in genreList)
             {
-                query = query.Where(m => m.Genre.Contains(genre));
+                query = query.Where(m => m.Genre.Contains(genre)).Take(20);
             }
 
             var results = await query.ToListAsync();
@@ -175,8 +183,136 @@ namespace Intex_Winter.Controllers
             return Ok(results);
         }
 
+        [HttpGet("get_genres")]
+        public async Task<IActionResult> GetGenres()
+        {
+            var query = _context.MoviesTitles.Select(m => m.Genre);
+            var results = await query.ToListAsync();
+
+            var individualResults = results
+                .Where(g => !string.IsNullOrWhiteSpace(g))
+                .SelectMany(g => g.Split(",", StringSplitOptions.RemoveEmptyEntries))
+                .Select(g => g.Trim())
+                .Distinct()
+                .ToList();
+
+            Console.WriteLine("results: ");
+            foreach (var result in individualResults)
+            {
+                Console.WriteLine(result);
+            }
+
+            return Ok(individualResults);
+        }
+
+        [HttpGet("recommender1")]
+        public async Task<IActionResult> GetRecommendedMovies([FromQuery] string showId)
+        {
+            if (string.IsNullOrEmpty(showId))
+            {
+                return BadRequest("Please provide a movie to be recommended on.");
+            }
+
+            try
+            {
+                var recommendationRecord = await _context.RatingRecommenders
+                    .FirstOrDefaultAsync(r => r.ShowId == showId);
+
+                if (recommendationRecord == null)
+                {
+                    return NotFound($"No recommendations found for showId: {showId}");
+                }
+
+                return Ok(recommendationRecord);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("recommender2")]
+        public async Task<IActionResult> GetUserRecommendedMovies([FromQuery] long? userId)
+        {
+            if (userId == null)
+            {
+                return BadRequest("Please provide a user to be recommended on.");
+            }
+
+            try
+            {
+                Console.WriteLine($"userID: {userId}");
+
+                var recommendationRecord = await _context.UserRatingRecommenders
+                    .FirstOrDefaultAsync(r => r.index == userId.Value);
+
+                if (recommendationRecord == null)
+                {
+                    return NotFound($"No recommendations found for userId: {userId}");
+                }
+
+                return Ok(recommendationRecord);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+    }
+}
+
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly MoviesDbContext _context;
+
+    public AuthController(MoviesDbContext context)
+    {
+        _context = context;
+    }
+    
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        // var userName = User.Identity?.Name;
+        // var users = _context.MoviesUsers.Where(u => u.Email == userName);
+        //
+        // Console.WriteLine((MoviesUser) users[0].UserId);
+        // return Ok(new { userName });
+        var userName = User.Identity?.Name;
+
+        if (string.IsNullOrEmpty(userName))
+        {
+            return Unauthorized("User is not authenticated.");
+        }
+
+        Console.WriteLine($"Looking for user... {userName}");
+        // var user = _context.MoviesUsers.Where(u => u.Email == userName);
+        var user = _context.MoviesUsers
+            .FirstOrDefault(u => EF.Functions.Like(u.Email, userName));
+
         
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+        Console.WriteLine("User found");
 
+        // Console.WriteLine($"User ID: {user[0].UserId}, Name: {user.Name}");
 
+        return Ok(
+        //     new 
+        // { 
+        //     user.UserId, 
+        //     user.Name, 
+        //     user.Email,
+        //     user.Phone,
+        //     user.City,
+        //     user.State 
+        //     // Add more fields as needed
+        // }
+            );
     }
 }

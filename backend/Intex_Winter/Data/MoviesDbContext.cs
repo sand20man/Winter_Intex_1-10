@@ -20,4 +20,7 @@ public partial class MoviesDbContext : DbContext
     public DbSet<MoviesTitle> MoviesTitles { get; set; }
 
     public DbSet<MoviesUser> MoviesUsers { get; set; }
+    
+    public DbSet<RatingRecommender> RatingRecommenders { get; set; }
+    public DbSet<UserRatingRecommender> UserRatingRecommenders { get; set; }
 }
