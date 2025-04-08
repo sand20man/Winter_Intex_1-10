@@ -16,7 +16,7 @@ function MoviePage() {
     const searchMovies = async () => {
       try {
         setLoading(true);
-        const data = await fetchSearch(searchQuery || '');
+        const data = await fetchSearch(searchQuery); //ignore the error
         setSearchResult(data);
       } catch (error) {
         setError((error as Error).message);
