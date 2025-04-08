@@ -96,7 +96,12 @@ import MovieCarousel from '../components/MovieCarousel';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
-import { fetchGenre, fetchSearch, fetchAllGenres } from '../api/MovieAPI';
+import {
+  fetchGenre,
+  fetchSearch,
+  fetchAllGenres,
+  getPosterUrl,
+} from '../api/MovieAPI';
 import '../components/MovieCard.css';
 
 function MoviePage() {
@@ -189,7 +194,7 @@ function MoviePage() {
             movies={searchResults.map((m) => ({
               showId: m.showId,
               title: m.title,
-              posterUrl: `posters/${m.title}.jpg`,
+              posterUrl: getPosterUrl(m.title),
             }))}
           />
         </>

@@ -73,3 +73,37 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
 export const getPosterUrl = (title: string) => {
   return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(title)}.jpg`;
 };
+
+export const getRecommendations = async (showId: string) => {
+  try {
+    const response = await fetch(`${api_URL}/recommender1?showId=${showId}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch recommendations');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching movie:', error);
+    throw error;
+  }
+};
+
+export const getUserRecommendations = async (userId: number) => {
+  try {
+    const response = await fetch(`${api_URL}/recommender2?userId=${userId}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch recommendations');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching movie:', error);
+    throw error;
+  }
+};
