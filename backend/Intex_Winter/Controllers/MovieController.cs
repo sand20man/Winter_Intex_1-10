@@ -33,9 +33,6 @@ namespace Intex_Winter.Controllers
                 .Take(pageSize)
                 .ToList();
 
-<<<<<<< HEAD
-            return Ok(movies);
-=======
             var result = new
             {
                 Movies = movies,
@@ -140,7 +137,6 @@ namespace Intex_Winter.Controllers
                 .FirstOrDefault();
 
             return Ok(latestId?.Original ?? "s0000");
->>>>>>> origin/lara
         }
 
         [HttpGet("{id}")]
