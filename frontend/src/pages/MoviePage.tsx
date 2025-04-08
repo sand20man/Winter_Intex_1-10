@@ -224,7 +224,9 @@ function MoviePage() {
 
       {recommendedMovies.length > 0 && (
         <>
-          <h2 className="text-xl font-bold ml-4 mt-6">Recommended for You</h2>
+          <h2 className="text-xl font-bold ml-4 mt-6">
+            Recommended for You Based on Movies You've Rated
+          </h2>
           <MovieCarousel
             movies={recommendedMovies.map((m) => ({
               showId: m.showId,

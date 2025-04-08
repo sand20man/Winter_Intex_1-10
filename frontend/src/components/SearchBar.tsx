@@ -22,11 +22,16 @@ const SearchBar: React.FC<Props> = ({ onSearchSubmit }) => {
         required
         type="text"
         placeholder="Search..."
-        className="navbar-search"
+        className="navbar-search me-2"
         value={searchInput}
         onChange={handleSearchChange}
       />
-      <button type="submit">Enter</button>
+      <button
+        className="bg-gray-200 hover:bg-gray-300 text-black px-4 py-2 rounded"
+        type="submit"
+      >
+        Enter
+      </button>
     </form>
   );
 };

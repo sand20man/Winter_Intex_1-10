@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Intex_Winter.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
@@ -27,10 +28,10 @@ namespace Intex_Winter.Controllers
                 .Skip(skip)
                 .Take(take)
                 .ToList();
-            
+
             return Ok(movies);
         }
-        
+
         [HttpGet("{id}")]
         public IActionResult GetMovieById(string id)
         {
@@ -48,7 +49,7 @@ namespace Intex_Winter.Controllers
                 .ToList();
             return Ok(results);
         }
-        
+
         [HttpGet("genre_search")]
         public async Task<IActionResult> SearchMoviesByGenres([FromQuery] string genres)
         {
@@ -70,7 +71,7 @@ namespace Intex_Winter.Controllers
 
             return Ok(results);
         }
-        
+
         [HttpGet("get_genres")]
         public async Task<IActionResult> GetGenres()
         {
@@ -146,7 +147,61 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-        
+    }
+}
 
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly MoviesDbContext _context;
+
+    public AuthController(MoviesDbContext context)
+    {
+        _context = context;
+    }
+    
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        // var userName = User.Identity?.Name;
+        // var users = _context.MoviesUsers.Where(u => u.Email == userName);
+        //
+        // Console.WriteLine((MoviesUser) users[0].UserId);
+        // return Ok(new { userName });
+        var userName = User.Identity?.Name;
+
+        if (string.IsNullOrEmpty(userName))
+        {
+            return Unauthorized("User is not authenticated.");
+        }
+
+        Console.WriteLine($"Looking for user... {userName}");
+        // var user = _context.MoviesUsers.Where(u => u.Email == userName);
+        var user = _context.MoviesUsers
+            .FirstOrDefault(u => EF.Functions.Like(u.Email, userName));
+
+        
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+        Console.WriteLine("User found");
+
+        // Console.WriteLine($"User ID: {user[0].UserId}, Name: {user.Name}");
+
+        return Ok(
+        //     new 
+        // { 
+        //     user.UserId, 
+        //     user.Name, 
+        //     user.Email,
+        //     user.Phone,
+        //     user.City,
+        //     user.State 
+        //     // Add more fields as needed
+        // }
+            );
     }
 }
