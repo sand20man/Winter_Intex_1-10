@@ -17,11 +17,19 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Intex_Winter
 build_property.RootNamespace = Intex_Winter
+<<<<<<< HEAD
 build_property.ProjectDir = /Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/
+=======
+build_property.ProjectDir = /Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/
+>>>>>>> origin/main
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+<<<<<<< HEAD
 build_property.MSBuildProjectDirectory = /Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter
+=======
+build_property.MSBuildProjectDirectory = /Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter
+>>>>>>> origin/main
 build_property._RazorSourceGeneratorDebug = 

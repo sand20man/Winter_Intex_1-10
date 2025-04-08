@@ -9586,11 +9586,16 @@
     ]
   },
   "packageFolders": {
+<<<<<<< HEAD
     "/Users/larajustus/.nuget/packages/": {}
+=======
+    "/Users/porter/.nuget/packages/": {}
+>>>>>>> origin/main
   },
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
       "projectName": "Intex_Winter",
       "projectPath": "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
@@ -9599,6 +9604,16 @@
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/larajustus/.nuget/NuGet/NuGet.Config"
+=======
+      "projectUniqueName": "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
+      "projectName": "Intex_Winter",
+      "projectPath": "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
+      "packagesPath": "/Users/porter/.nuget/packages/",
+      "outputPath": "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/porter/.nuget/NuGet/NuGet.Config"
+>>>>>>> origin/main
       ],
       "originalTargetFrameworks": [
         "net8.0"
