@@ -1,20 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
-import { useState } from 'react';
+import SearchBar from './SearchBar';
 
 interface NavbarProps {
   onSearchChange: (query: string) => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onSearchChange }) => {
-  const [searchInput, setSearchInput] = useState('');
   const navigate = useNavigate();
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    onSearchChange(value); // 👈 sends input to parent
-  };
 
   return (
     <>
@@ -26,9 +19,6 @@ const Navbar: React.FC<NavbarProps> = ({ onSearchChange }) => {
 
           <div className="navbar-links">
             <span onClick={() => navigate('/')}>Home</span>
-            <span onClick={() => navigate('/recommendations')}>
-              Recommendations
-            </span>
             <span onClick={() => navigate('/admin')}>Admin</span>
             <span onClick={() => navigate('/profile')}>Watchlist</span>
             <span onClick={() => navigate('/privacy')}>Privacy</span>
@@ -36,13 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearchChange }) => {
         </div>
 
         <div className="navbar-right">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="navbar-search"
-            value={searchInput}
-            onChange={handleSearchChange}
-          />
+          <SearchBar onSearchSubmit={onSearchChange} />
           <div className="navbar-profile">
             <span className="navbar-avatar">👤</span>
             <span className="navbar-name">Name</span>

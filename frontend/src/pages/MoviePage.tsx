@@ -1,23 +1,39 @@
 import { useEffect, useState } from 'react';
-import MovieCard from '../components/MovieCard';
 import MovieCarousel from '../components/MovieCarousel';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
-import { fetchSearch } from '../api/MovieAPI';
+import { fetchGenre, fetchSearch } from '../api/MovieAPI';
 
 function MoviePage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>();
+  const [searchResults, setSearchResult] = useState<Movie[]>([]);
+  const [genre, setGenre] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [movies, setMovies] = useState<Movie[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadMovies = async () => {
+    const searchMovies = async () => {
       try {
         setLoading(true);
-        const data = await fetchSearch('angry');
-        setMovies(data);
+        const data = await fetchSearch(searchQuery);
+        setSearchResult(data);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    searchMovies();
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const loadMovies = async () => {
+      // if (!searchQuery.trim()) return; // Don't search if it's empty
+      try {
+        setLoading(true);
+        const data = await fetchGenre('thrillers');
+        setGenre(data);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -25,7 +41,7 @@ function MoviePage() {
       }
     };
     loadMovies();
-  }, [searchQuery]);
+  }, []);
 
   if (loading) return <p>Loading projects... </p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
@@ -33,15 +49,21 @@ function MoviePage() {
   return (
     <>
       <Navbar onSearchChange={setSearchQuery} />
-      <MovieCard
-        title={'The Incredibles 2'}
-        posterUrl={'./posters/The Incredibles 2.jpg'}
-      />
+      <h2 className="text-xl font-bold ml-4">Search Results</h2>
       <MovieCarousel
-        movies={movies.map((m, i) => ({
-          id: i, // or use a real unique ID if available
+        movies={searchResults.map((m) => ({
+          showId: m.showId, // or use a real unique ID if available
           title: m.title,
-          posterUrl: `/posters/${m.title}.jpg`,
+          posterUrl: `posters/${m.title}.jpg`,
+        }))}
+      />
+      <br />
+      <h2 className="text-xl font-bold ml-4">Thrillers (HardCoded)</h2>
+      <MovieCarousel
+        movies={genre.map((m) => ({
+          showId: m.showId,
+          title: m.title,
+          posterUrl: `/Movie Posters/${m.title}.jpg`,
         }))}
       />
       <Footer />
