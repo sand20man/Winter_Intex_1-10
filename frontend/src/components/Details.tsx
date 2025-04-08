@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchSingle, getPosterUrl } from '../api/MovieAPI';
+import { fetchSingle, getPosterUrl, getRecommendations } from '../api/MovieAPI';
 import NavBar from './NavBar';
 import './Details.css';
+import MovieCarousel from './MovieCarousel';
 
 interface MovieDetails {
+  showId: string;
   title: string;
   director: string;
   cast: string;
@@ -16,13 +18,31 @@ interface MovieDetails {
 const Details: React.FC = () => {
   const { showId } = useParams<{ showId: string }>();
   const [movie, setMovie] = useState<MovieDetails | null>(null);
+  const [recommendedMovies, setRecommendedMovies] = useState<MovieDetails[]>(
+    []
+  );
 
   useEffect(() => {
-    if (!showId) return;
     const fetchMovie = async () => {
       try {
+        if (!showId) return;
         const data = await fetchSingle(showId);
         setMovie(data);
+
+        const recData = await getRecommendations(showId);
+        const recIds = [
+          recData.rec1,
+          recData.rec2,
+          recData.rec3,
+          recData.rec4,
+          recData.rec5,
+        ];
+
+        const recDetails = await Promise.all(
+          recIds.map((id) => fetchSingle(id))
+        );
+
+        setRecommendedMovies(recDetails);
       } catch (err) {
         console.error('Error fetching movie details:', err);
       }
@@ -73,6 +93,18 @@ const Details: React.FC = () => {
             }}
           />
         </div>
+        {recommendedMovies.length > 0 && (
+          <>
+            <h3 className="recommended-heading">You might also like</h3>
+            <MovieCarousel
+              movies={recommendedMovies.map((m) => ({
+                showId: m.showId,
+                title: m.title,
+                posterUrl: getPosterUrl(m.title), // assumes you have this helper
+              }))}
+            />
+          </>
+        )}
       </div>
     </>
   );

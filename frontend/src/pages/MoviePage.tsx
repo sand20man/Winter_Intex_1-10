@@ -3,7 +3,7 @@ import MovieCarousel from '../components/MovieCarousel';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import { Movie } from '../types/Movie';
-import { fetchGenre } from '../api/MovieAPI';
+import { fetchGenre, getPosterUrl } from '../api/MovieAPI';
 import '../components/MovieCard.css';
 import { useLocation } from 'react-router-dom';
 
@@ -45,7 +45,7 @@ function MoviePage() {
             movies={moviesToShow.map((m) => ({
               showId: m.showId, // or use a real unique ID if available
               title: m.title,
-              posterUrl: `posters/${m.title}.jpg`,
+              posterUrl: getPosterUrl(m.title),
             }))}
           />
         </>
@@ -57,7 +57,7 @@ function MoviePage() {
             movies={genre.map((m) => ({
               showId: m.showId,
               title: m.title,
-              posterUrl: `/Movie Posters/${m.title}.jpg`,
+              posterUrl: getPosterUrl(m.title),
             }))}
           />
         </>
@@ -69,7 +69,7 @@ function MoviePage() {
         movies={genre.map((m) => ({
           showId: m.showId,
           title: m.title,
-          posterUrl: `/Movie Posters/${m.title}.jpg`,
+          posterUrl: getPosterUrl(m.title),
         }))}
       />
       <Footer />

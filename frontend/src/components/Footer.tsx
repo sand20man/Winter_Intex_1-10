@@ -6,7 +6,7 @@ const Footer = () => {
 
   return (
     <footer className="footer">
-      <div className="footer-left" onClick={() => navigate('/')}>
+      <div className="footer-left" onClick={() => navigate('/movie')}>
         <img
           src="logos/horizontal logo.png"
           alt="CineNiche Logo"
