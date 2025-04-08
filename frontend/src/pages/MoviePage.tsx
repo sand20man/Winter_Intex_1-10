@@ -215,7 +215,14 @@ function MoviePage() {
     }
   }, [searchQuery]);
 
-  if (loading) return <p>Loading movies...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[80vh] bg-neutral-900 text-white">
+        <p className="text-lg">Loading movies...</p>
+      </div>
+    );
+  }
+
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (

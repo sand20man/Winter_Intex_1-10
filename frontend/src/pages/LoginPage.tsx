@@ -1,19 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Identity.css';
 import '@fortawesome/fontawesome-free/css/all.css';
+import Navbar from '../components/NavBar';
+import Footer from '../components/Footer';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../firebaseConfig';
 
 function LoginPage() {
-  // state variables for email and passwords
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [rememberme, setRememberme] = useState<boolean>(false);
-
-  // state variable for error messages
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
 
-  // handle change events for input fields
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log('User:', user);
+      navigate('/movie'); // 👈 THIS sends the user to the next page
+    } catch (error) {
+      console.error('Google login failed:', error);
+      setError('Google login failed.');
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type, checked, value } = e.target;
     if (type === 'checkbox') {
@@ -29,10 +41,9 @@ function LoginPage() {
     navigate('/register');
   };
 
-  // handle submit event for the form
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(''); // Clear any previous errors
+    setError('');
 
     if (!email || !password) {
       setError('Please fill in all fields.');
@@ -46,12 +57,11 @@ function LoginPage() {
     try {
       const response = await fetch(loginUrl, {
         method: 'POST',
-        credentials: 'include', // ✅ Ensures cookies are sent & received
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      // Ensure we only parse JSON if there is content
       let data = null;
       const contentLength = response.headers.get('content-length');
       if (contentLength && parseInt(contentLength, 10) > 0) {
@@ -75,92 +85,122 @@ function LoginPage() {
   };
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="card border-0 shadow rounded-3 ">
-          <div className="card-body p-4 p-sm-5">
-            <h5 className="card-title text-center mb-5 fw-light fs-5">
-              Sign In
-            </h5>
-            <form onSubmit={handleSubmit}>
-              <div className="form-floating mb-3">
-                <input
-                  className="form-control"
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={email}
-                  onChange={handleChange}
-                />
-                <label htmlFor="email">Email address</label>
-              </div>
-              <div className="form-floating mb-3">
-                <input
-                  className="form-control"
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={password}
-                  onChange={handleChange}
-                />
-                <label htmlFor="password">Password</label>
-              </div>
+    <>
+      <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 3 }}>
+        <Navbar onSearchChange={() => {}} homePageBool={true} />
+      </div>
 
-              <div className="form-check mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="rememberme"
-                  name="rememberme"
-                  checked={rememberme}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label" htmlFor="rememberme">
-                  Remember password
-                </label>
-              </div>
-              <div className="d-grid mb-2">
-                <button
-                  className="btn btn-primary btn-login text-uppercase fw-bold"
-                  type="submit"
+      <div className="position-relative vh-100 d-flex align-items-center justify-content-center bg-dark text-white">
+        {/* Faded overlay like HomePage */}
+        <div
+          className="position-absolute top-0 start-0 w-100 h-100"
+          style={{ zIndex: 1 }}
+        >
+          <div className="w-100 h-100 position-relative">
+            <svg
+              className="position-absolute top-0 start-0 w-100 h-100"
+              preserveAspectRatio="none"
+              viewBox="0 0 100 100"
+              style={{ pointerEvents: 'none' }}
+            >
+              <defs>
+                <linearGradient
+                  id="fadeOverlay"
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="0"
+                  gradientUnits="objectBoundingBox"
                 >
-                  Sign in
-                </button>
-              </div>
-              <div className="d-grid mb-2">
-                <button
-                  className="btn btn-primary btn-login text-uppercase fw-bold"
-                  onClick={handleRegisterClick}
-                >
-                  Register
-                </button>
-              </div>
-              <hr className="my-4" />
-              <div className="d-grid mb-2">
-                <button
-                  className="btn btn-google btn-login text-uppercase fw-bold"
-                  type="button"
-                >
-                  <i className="fa-brands fa-google me-2"></i> Sign in with
-                  Google
-                </button>
-              </div>
-              <div className="d-grid mb-2">
-                <button
-                  className="btn btn-facebook btn-login text-uppercase fw-bold"
-                  type="button"
-                >
-                  <i className="fa-brands fa-facebook-f me-2"></i> Sign in with
-                  Facebook
-                </button>
-              </div>
-            </form>
-            {error && <p className="error">{error}</p>}
+                  <stop offset="0%" stopColor="black" stopOpacity="1" />
+                  <stop offset="100%" stopColor="black" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                fill="url(#fadeOverlay)"
+              />
+            </svg>
           </div>
         </div>
+
+        {/* Form Content */}
+        <div
+          className="container position-relative z-2 text-white"
+          style={{ maxWidth: '500px' }}
+        >
+          <h1 className="mb-4 fw-bold text-start">Sign In</h1>
+          <form onSubmit={handleSubmit}>
+            <div className="form-floating mb-3">
+              <input
+                className="form-control"
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+                placeholder="Email address"
+              />
+              <label htmlFor="email">Email address</label>
+            </div>
+            <div className="form-floating mb-3">
+              <input
+                className="form-control"
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={handleChange}
+                placeholder="Password"
+              />
+              <label htmlFor="password">Password</label>
+            </div>
+
+            <div className="form-check mb-3">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="rememberme"
+                name="rememberme"
+                checked={rememberme}
+                onChange={handleChange}
+              />
+              <label className="form-check-label" htmlFor="rememberme">
+                Remember password
+              </label>
+            </div>
+
+            <div className="d-grid gap-2 mb-3">
+              <button className="btn btn-primary fw-bold" type="submit">
+                Sign In
+              </button>
+              <button
+                className="btn btn-secondary fw-bold"
+                type="button"
+                onClick={handleRegisterClick}
+              >
+                Register
+              </button>
+            </div>
+
+            <hr className="my-4" />
+
+            <div className="d-grid gap-2 mb-2">
+              <button onClick={handleGoogleLogin} className="btn btn-danger">
+                <i className="fa-brands fa-google me-2"></i> Sign in with Google
+              </button>
+            </div>
+
+            {error && <p className="text-danger mt-3">{error}</p>}
+          </form>
+        </div>
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
 }
 
