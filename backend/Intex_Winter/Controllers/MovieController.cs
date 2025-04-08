@@ -120,7 +120,7 @@ namespace Intex_Winter.Controllers
         }
 
         [HttpGet("recommender2")]
-        public async Task<IActionResult> GetUserRecommendedMovies([FromQuery] int? userId)
+        public async Task<IActionResult> GetUserRecommendedMovies([FromQuery] long? userId)
         {
             if (userId == null)
             {
@@ -129,8 +129,10 @@ namespace Intex_Winter.Controllers
 
             try
             {
+                Console.WriteLine($"userID: {userId}");
+
                 var recommendationRecord = await _context.UserRatingRecommenders
-                    .FirstOrDefaultAsync(r => r.index == userId);
+                    .FirstOrDefaultAsync(r => r.index == userId.Value);
 
                 if (recommendationRecord == null)
                 {

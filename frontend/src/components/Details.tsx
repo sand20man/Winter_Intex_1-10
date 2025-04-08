@@ -57,58 +57,6 @@ const Details: React.FC = () => {
   return (
     <>
       <NavBar />
-      {/* <div className="details-container">
-        <div>
-          <div className="movie-info">
-            <h2 className="movie-detail-title">
-              {movie.title}{' '}
-              <span className="release-year">({movie.releaseYear})</span>
-            </h2>
-
-            <p>
-              <strong>Directed by:</strong> {movie.director?.trim() || 'N/A'}
-            </p>
-
-            <div>
-              <strong>Cast:</strong> {movie.cast || 'N/A'}
-            </div>
-
-            <br />
-            <div>
-              <strong>Rating:</strong> {movie.rating || 'N/A'}
-            </div>
-
-            <p className="description">
-              <strong>Movie Description:</strong>{' '}
-              {movie.description?.trim() || 'N/A'}
-            </p>
-          </div>
-
-          {recommendedMovies.length > 0 && (
-            <>
-              <h3 className="recommended-heading">You might also like</h3>
-              <MovieCarousel
-                movies={recommendedMovies.map((m) => ({
-                  showId: m.showId,
-                  title: m.title,
-                  posterUrl: getPosterUrl(m.title), // assumes you have this helper
-                }))}
-              />
-            </>
-          )}
-        </div>
-
-        <div className="poster-container">
-          <img
-            src={getPosterUrl(movie.title)}
-            alt={`${movie.title} poster`}
-            className="movie-poster"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/logos/VerticalLogo.png';
-            }}
-          />
-        </div>
-      </div> */}
       <div className="container details-container">
         <div className="row">
           {/* Left Column: Movie Info and Recommendations */}

@@ -101,6 +101,8 @@ import {
   fetchSearch,
   fetchAllGenres,
   getPosterUrl,
+  getUserRecommendations,
+  fetchSingle,
 } from '../api/MovieAPI';
 import '../components/MovieCard.css';
 
@@ -111,6 +113,49 @@ function MoviePage() {
   const [genreMovies, setGenreMovies] = useState<Record<string, Movie[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+
+  // Fetch recommendations
+  useEffect(() => {
+    const loadRecommendations = async () => {
+      try {
+        //TODO make this not static
+        const userId = 1; // change this to dynamic user if needed
+        const recData = await getUserRecommendations(userId);
+        const recIds = [
+          recData.rec1,
+          recData.rec2,
+          recData.rec3,
+          recData.rec4,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+          recData.rec5,
+        ];
+
+        const recDetails = await Promise.all(
+          recIds.map((id) => fetchSingle(id))
+        );
+
+        setRecommendedMovies(recDetails);
+      } catch (error) {
+        console.error('Failed to load recommendations', error);
+      }
+    };
+
+    loadRecommendations();
+  }, []);
 
   // Fetch all genres once
   useEffect(() => {
@@ -175,6 +220,20 @@ function MoviePage() {
   return (
     <>
       <Navbar onSearchChange={setSearchQuery} homePageBool={false} />
+
+      {recommendedMovies.length > 0 && (
+        <>
+          <h2 className="text-xl font-bold ml-4 mt-6">Recommended for You</h2>
+          <MovieCarousel
+            movies={recommendedMovies.map((m) => ({
+              showId: m.showId,
+              title: m.title,
+              posterUrl: getPosterUrl(m.title),
+            }))}
+          />
+          <br />
+        </>
+      )}
 
       {searchQuery && searchQuery.trim() && searchResults.length > 0 ? (
         <>

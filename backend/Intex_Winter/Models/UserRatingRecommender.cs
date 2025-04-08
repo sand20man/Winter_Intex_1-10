@@ -8,7 +8,7 @@ namespace Intex_Winter.Models;
 public class UserRatingRecommender
 {
     [Column("index")] // user_id
-    public int index { get; set; }
+    public long index { get; set; }
 
     [Column("Because you rated")]
     public string? Title { get; set; }
