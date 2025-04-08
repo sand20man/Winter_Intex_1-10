@@ -11,10 +11,6 @@ function Register() {
   // state variable for error messages
   const [error, setError] = useState('');
 
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
-
   // handle change events for input fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,7 +47,9 @@ function Register() {
         .then((data) => {
           // handle success or error from the server
           console.log(data);
-          if (data.ok) setError('Successful registration. Please log in.');
+          if (data.ok)
+            setError('Successful registration. Please log in.'),
+              navigate('/login');
           else setError('Error registering.');
         })
         .catch((error) => {
@@ -111,14 +109,6 @@ function Register() {
                   type="submit"
                 >
                   Register
-                </button>
-              </div>
-              <div className="d-grid mb-2">
-                <button
-                  className="btn btn-primary btn-login text-uppercase fw-bold"
-                  onClick={handleLoginClick}
-                >
-                  Go to Login
                 </button>
               </div>
             </form>

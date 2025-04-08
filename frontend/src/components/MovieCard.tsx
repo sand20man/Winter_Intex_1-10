@@ -3,7 +3,7 @@ import './MovieCard.css';
 import { useNavigate } from 'react-router-dom';
 
 interface MovieCardProps {
-  showId: number;
+  showId: string;
   title: string;
   posterUrl: string;
 }
