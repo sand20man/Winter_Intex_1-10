@@ -19,6 +19,8 @@ public partial class MoviesUser
     [Column("phone")]
     public string? Phone { get; set; }
 
+    [Required]
+    [EmailAddress]
     [Column("email")]
     public string? Email { get; set; }
 

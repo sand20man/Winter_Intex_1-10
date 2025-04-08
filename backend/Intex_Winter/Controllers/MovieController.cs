@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Intex_Winter.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
 {
@@ -38,6 +39,30 @@ namespace Intex_Winter.Controllers
                 .ToList();
             return Ok(results);
         }
+        
+        [HttpGet("genre_search")]
+        public async Task<IActionResult> SearchMoviesByGenres([FromQuery] string genres)
+        {
+            if (string.IsNullOrEmpty(genres))
+            {
+                return BadRequest("Please provide one or more genres.");
+            }
+
+            var genreList = genres.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            var query = _context.MoviesTitles.AsQueryable();
+
+            foreach (var genre in genreList)
+            {
+                query = query.Where(m => m.Genre.Contains(genre));
+            }
+
+            var results = await query.ToListAsync();
+
+            return Ok(results);
+        }
+
+        
 
 
     }
