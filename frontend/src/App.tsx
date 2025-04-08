@@ -4,6 +4,7 @@ import MoviePage from './pages/MoviePage';
 import PrivacyPage from './pages/PrivacyPage';
 import Details from './components/Details';
 import LoginPage from './pages/LoginPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/movie/:showId" element={<Details />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </Router>
     </>

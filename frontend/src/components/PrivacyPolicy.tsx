@@ -51,12 +51,40 @@ const PrivacyPolicy = () => {
         <li>To communicate with you</li>
         <li>To prevent fraud or misuse</li>
       </ul>
+      <p>
+        We process your personal data under the following legal bases:
+        <ul>
+          <li>Your consent (e.g., for email marketing or cookies)</li>
+          <li>
+            The performance of a contract (e.g., providing subscription access)
+          </li>
+          <li>Our legitimate interests (e.g., improving the service)</li>
+          <li>Compliance with legal obligations</li>
+        </ul>
+      </p>
 
       <h2 className="privacy-subheading">Cookies and Tracking</h2>
       <p>
-        We use cookies to keep you logged in, save preferences, and improve your
-        experience. You can manage cookies in your browser settings. Disabling
-        them may impact functionality.
+        We use cookies for essential functionality, to understand usage
+        patterns, and to deliver personalized content and advertising.
+      </p>
+      <p>The types of cookies we use include:</p>
+      <ul>
+        <li>
+          <strong>Essential cookies</strong> – Required for site functionality
+        </li>
+        <li>
+          <strong>Analytics cookies</strong> – Help us understand how users
+          interact with the site
+        </li>
+        <li>
+          <strong>Marketing cookies</strong> – Used to display relevant
+          advertisements
+        </li>
+      </ul>
+      <p>
+        You can adjust your cookie preferences at any time in your browser
+        settings or via our cookie consent tool.
       </p>
 
       <h2 className="privacy-subheading">Sharing Your Information</h2>
@@ -83,6 +111,40 @@ const PrivacyPolicy = () => {
         <a href="mailto:privacy@cineniche.com">privacy@cineniche.com</a>.
       </p>
 
+      <h2 className="privacy-subheading">Your Data Protection Rights</h2>
+      <p>You have the following rights under the GDPR:</p>
+      <ul>
+        <li>
+          The right to access – You can request a copy of the personal data we
+          hold about you.
+        </li>
+        <li>
+          The right to rectification – You can ask us to correct or complete
+          inaccurate or incomplete data.
+        </li>
+        <li>
+          The right to erasure – You can request that we delete your data under
+          certain conditions.
+        </li>
+        <li>
+          The right to restrict processing – You can request we limit how we use
+          your data.
+        </li>
+        <li>
+          The right to object to processing – You can object to how we use your
+          data, including for direct marketing.
+        </li>
+        <li>
+          The right to data portability – You can request a copy of your data in
+          a machine-readable format.
+        </li>
+      </ul>
+      <p>
+        To exercise any of these rights, please email{' '}
+        <a href="mailto:privacy@cineniche.com">privacy@cineniche.com</a>. We
+        will respond within one month.
+      </p>
+
       <h2 className="privacy-subheading">Children’s Privacy</h2>
       <p>
         CineNiche is not intended for children under 13. We do not knowingly
@@ -92,14 +154,19 @@ const PrivacyPolicy = () => {
       <h2 className="privacy-subheading">Data Security and Retention</h2>
       <p>
         We use encryption, access controls, and security audits to protect your
-        data. Data is only retained as long as necessary for legal or business
-        reasons.
+        data. We retain your personal data for as long as your account is active
+        or as needed to provide you with our services. Inactive accounts are
+        deleted after 12 months of inactivity. Data related to financial
+        transactions is retained for up to 7 years for legal compliance.
       </p>
 
       <h2 className="privacy-subheading">International Data Transfers</h2>
       <p>
         CineNiche is based in the U.S. Your data may be processed in the U.S. or
-        other countries where our partners operate.
+        other countries where our partners operate. If we transfer your personal
+        data outside the European Economic Area (EEA), we ensure appropriate
+        safeguards are in place, such as Standard Contractual Clauses approved
+        by the European Commission.
       </p>
 
       <h2 className="privacy-subheading">Updates to This Policy</h2>
@@ -109,6 +176,15 @@ const PrivacyPolicy = () => {
       </p>
 
       <h2 className="privacy-subheading">Contact Us</h2>
+      <p>
+        CineNiche LLC is the data controller responsible for processing your
+        personal data in accordance with this policy.
+      </p>
+      <p>
+        If you are a resident of the European Economic Area (EEA) and believe
+        that your data protection rights have been violated, you have the right
+        to lodge a complaint with your local Data Protection Authority (DPA).
+      </p>
       <p>If you have questions, please reach out:</p>
       <p>
         <a href="mailto:privacy@cineniche.com">privacy@cineniche.com</a>
