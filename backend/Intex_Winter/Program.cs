@@ -20,7 +20,7 @@ builder.Services.AddDbContext<MoviesDbContext>(options =>
 
 // ApplicationDbContext → local SQLite (for login/auth, not deployed)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MovieConnection")));
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()  
     .AddEntityFrameworkStores<ApplicationDbContext>();
