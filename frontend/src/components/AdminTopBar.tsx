@@ -8,7 +8,7 @@ const AdminTopBar = () => {
     <>
       <nav className="navbar">
         <div className="navbar-left">
-          <div className="navbar-logo" onClick={() => navigate('/')}>
+          <div className="navbar-logo" onClick={() => navigate('/movie')}>
             <img src="logos/horizontal logo.png" alt="Home logo" height={70} />
           </div>
         </div>

@@ -47,7 +47,7 @@ function AdminPage() {
     }
   };
 
-  if (loading) return <p>Loading movies...</p>;
+  if (loading) return <p>Loading admin...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (
