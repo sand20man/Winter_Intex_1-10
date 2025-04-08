@@ -3,7 +3,7 @@ import './Navbar.css';
 import SearchBar from './SearchBar';
 
 interface NavbarProps {
-  onSearchChange: (query: string) => void;
+  onSearchChange: (query: string | null) => void;
   homePageBool: boolean;
 }
 
@@ -41,13 +41,21 @@ const Navbar: React.FC<NavbarProps> = ({
         ) : (
           <>
             <div className="navbar-links">
-              <span onClick={() => navigate('/')}>Home</span>
+              <span onClick={() => navigate('/movie')}>Home</span>
               <span onClick={() => navigate('/admin')}>Admin</span>
               <span onClick={() => navigate('/profile')}>Watchlist</span>
               <span onClick={() => navigate('/privacy')}>Privacy</span>
             </div>
             <div className="navbar-right">
               <SearchBar onSearchSubmit={onSearchChange} />
+              <button
+                className="bg-gray-200 hover:bg-gray-300 text-black px-4 py-2 rounded"
+                onClick={() => {
+                  onSearchChange(null);
+                }}
+              >
+                Clear Search
+              </button>
               <div className="navbar-profile">
                 <span className="navbar-avatar">👤</span>
                 <span className="navbar-name">Name</span>

@@ -63,9 +63,14 @@ function LoginPage() {
       }
 
       navigate('/movie');
-    } catch (error: any) {
-      setError(error.message || 'Error logging in.');
-      console.error('Fetch attempt failed:', error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || 'Error logging in.');
+        console.error('Fetch attempt failed:', error.message);
+      } else {
+        setError('An unknown error occurred.');
+        console.error('Fetch attempt failed:', error);
+      }
     }
   };
 

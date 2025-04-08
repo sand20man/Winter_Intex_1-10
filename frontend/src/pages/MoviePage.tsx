@@ -6,7 +6,7 @@ import { Movie } from '../types/Movie';
 import { fetchGenre, fetchSearch } from '../api/MovieAPI';
 
 function MoviePage() {
-  const [searchQuery, setSearchQuery] = useState<string>();
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [searchResults, setSearchResult] = useState<Movie[]>([]);
   const [genre, setGenre] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ function MoviePage() {
     const searchMovies = async () => {
       try {
         setLoading(true);
-        const data = await fetchSearch(searchQuery); //ignore the error
+        const data = await fetchSearch(searchQuery);
         setSearchResult(data);
       } catch (error) {
         setError((error as Error).message);
@@ -48,24 +48,32 @@ function MoviePage() {
 
   return (
     <>
-      <Navbar onSearchChange={setSearchQuery} />
-      <h2 className="text-xl font-bold ml-4">Search Results</h2>
-      <MovieCarousel
-        movies={searchResults.map((m) => ({
-          showId: m.showId, // or use a real unique ID if available
-          title: m.title,
-          posterUrl: `posters/${m.title}.jpg`,
-        }))}
-      />
-      <br />
-      <h2 className="text-xl font-bold ml-4">Thrillers (HardCoded)</h2>
-      <MovieCarousel
-        movies={genre.map((m) => ({
-          showId: m.showId,
-          title: m.title,
-          posterUrl: `/Movie Posters/${m.title}.jpg`,
-        }))}
-      />
+      <Navbar onSearchChange={setSearchQuery} homePageBool={false} />
+
+      {searchQuery && searchQuery.trim() && searchResults.length > 0 ? (
+        <>
+          <h2 className="text-xl font-bold ml-4">Search Results</h2>
+          <MovieCarousel
+            movies={searchResults.map((m) => ({
+              showId: m.showId,
+              title: m.title,
+              posterUrl: `posters/${m.title}.jpg`,
+            }))}
+          />
+        </>
+      ) : (
+        <>
+          <h2 className="text-xl font-bold ml-4">Thrillers (Hardcoded)</h2>
+          <MovieCarousel
+            movies={genre.map((m) => ({
+              showId: m.showId,
+              title: m.title,
+              posterUrl: `/Movie Posters/${m.title}.jpg`,
+            }))}
+          />
+        </>
+      )}
+
       <Footer />
     </>
   );
