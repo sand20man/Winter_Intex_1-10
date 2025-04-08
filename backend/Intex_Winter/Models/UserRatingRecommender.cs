@@ -15,7 +15,6 @@ public class UserRatingRecommender
     
     [Column("Rec 1 id")]
     public string? Rec1 { get; set; }
-    
     [Column("Rec 2 id")]
     public string? Rec2 { get; set; }
     [Column("Rec 3 id")]

@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import Details from './components/Details';
 import RegisterPage from './pages/RegisterPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/movie/:showId" element={<Details />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </Router>
       </div>

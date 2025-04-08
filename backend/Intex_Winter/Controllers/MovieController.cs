@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Intex_Winter.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
@@ -17,20 +18,131 @@ namespace Intex_Winter.Controllers
         {
             _context = context;
         }
-
-        [HttpGet]
-        public IActionResult GetAllMovies(int skip = 0, int take = 20)
+        
+        [HttpGet("AllMovies")]
+        public IActionResult GetMovies(int pageSize = 20, int pageNum = 1)
         {
-            var movies = _context.MoviesTitles
+            var query = _context.MoviesTitles.AsQueryable();
+
+            var totalNumMovies = query.Count();
+
+            var movies = query
                 .AsNoTracking()
                 .OrderBy(m => m.Title)
-                .Skip(skip)
-                .Take(take)
+                .Skip((pageNum - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
-            
+
+<<<<<<< HEAD
             return Ok(movies);
+=======
+            var result = new
+            {
+                Movies = movies,
+                TotalNumMovies = totalNumMovies
+            };
+
+            return Ok(result);
         }
         
+        [HttpPost("AddMovie")]
+        public IActionResult AddMovie([FromBody] MoviesTitle newMovie)
+        {
+            _context.MoviesTitles.Add(newMovie);
+            _context.SaveChanges();
+            return Ok(newMovie);
+        }
+
+        [HttpPut("UpdateMovie/{showId}")]
+        public IActionResult UpdateMovie(string showId, [FromBody] MoviesTitle updatedMovie)
+        {
+            var existingMovie = _context.MoviesTitles.Find(showId);
+
+            existingMovie.Type = updatedMovie.Type;
+            existingMovie.Title = updatedMovie.Title;
+            existingMovie.Director = updatedMovie.Director;
+            existingMovie.Cast = updatedMovie.Cast;
+            existingMovie.Country = updatedMovie.Country;
+            existingMovie.ReleaseYear = updatedMovie.ReleaseYear;
+            existingMovie.Rating = updatedMovie.Rating;
+            existingMovie.Duration = updatedMovie.Duration;
+            existingMovie.Description = updatedMovie.Description;
+            existingMovie.Genre = updatedMovie.Genre;
+            existingMovie.Action = updatedMovie.Action;
+            existingMovie.Adventure = updatedMovie.Adventure;
+            existingMovie.AnimeSeriesInternationalTvShows = updatedMovie.AnimeSeriesInternationalTvShows;
+            existingMovie.BritishTvShowsDocuseriesInternationalTvShows = updatedMovie.BritishTvShowsDocuseriesInternationalTvShows;
+            existingMovie.Children = updatedMovie.Children;
+            existingMovie.Comedies = updatedMovie.Comedies;
+            existingMovie.ComediesDramasInternationalMovies = updatedMovie.ComediesDramasInternationalMovies;
+            existingMovie.ComediesInternationalMovies = updatedMovie.ComediesInternationalMovies;
+            existingMovie.ComediesRomanticMovies = updatedMovie.ComediesRomanticMovies;
+            existingMovie.CrimeTvShowsDocuseries = updatedMovie.CrimeTvShowsDocuseries;
+            existingMovie.Documentaries = updatedMovie.Documentaries;
+            existingMovie.DocumentariesInternationalMovies = updatedMovie.DocumentariesInternationalMovies;
+            existingMovie.Docuseries = updatedMovie.Docuseries;
+            existingMovie.Dramas = updatedMovie.Dramas;
+            existingMovie.DramasInternationalMovies = updatedMovie.DramasInternationalMovies;
+            existingMovie.DramasRomanticMovies = updatedMovie.DramasRomanticMovies;
+            existingMovie.FamilyMovies = updatedMovie.FamilyMovies;
+            existingMovie.Fantasy = updatedMovie.Fantasy;
+            existingMovie.HorrorMovies = updatedMovie.HorrorMovies;
+            existingMovie.InternationalMoviesThrillers = updatedMovie.InternationalMoviesThrillers;
+            existingMovie.InternationalTVShowsRomanticTVDramas = updatedMovie.InternationalTVShowsRomanticTVDramas;
+            existingMovie.KidsTv = updatedMovie.KidsTv;
+            existingMovie.LanguageTvShows = updatedMovie.LanguageTvShows;
+            existingMovie.Musicals = updatedMovie.Musicals;
+            existingMovie.NatureTv = updatedMovie.NatureTv;
+            existingMovie.RealityTv = updatedMovie.RealityTv;
+            existingMovie.Spirituality = updatedMovie.Spirituality;
+            existingMovie.TvAction = updatedMovie.TvAction;
+            existingMovie.TvComedies = updatedMovie.TvComedies;
+            existingMovie.TvDramas = updatedMovie.TvDramas;
+            existingMovie.TalkShowsTvComedies = updatedMovie.TalkShowsTvComedies;
+            existingMovie.Thrillers = updatedMovie.Thrillers;
+
+            _context.MoviesTitles.Update(existingMovie);
+            _context.SaveChanges();
+
+            return Ok(existingMovie);
+        }
+
+        [HttpDelete("DeleteMovie/{showId}")]
+        public IActionResult DeleteMovie(string showId)
+        {
+            var movie = _context.MoviesTitles.Find(showId);
+
+            if (movie == null)
+            {
+                return NotFound(new { message = "Movie not found" });
+            }
+
+            _context.MoviesTitles.Remove(movie);
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+        
+        [HttpGet("latestShowid")]
+        public IActionResult GetLatestShowId()
+        {
+            var latestId = _context.MoviesTitles
+                .AsNoTracking()
+                .Select(m => m.ShowId)  // Only fetch ShowIds
+                .AsEnumerable()         // Switch to LINQ-to-Objects
+                .Where(id => id.StartsWith("s") && int.TryParse(id.Substring(1), out _)) // Only valid numeric ids
+                .Select(id => new
+                {
+                    Original = id,
+                    Numeric = int.Parse(id.Substring(1))
+                })
+                .OrderByDescending(x => x.Numeric)
+                .FirstOrDefault();
+
+            return Ok(latestId?.Original ?? "s0000");
+>>>>>>> origin/lara
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetMovieById(string id)
         {
@@ -48,7 +160,7 @@ namespace Intex_Winter.Controllers
                 .ToList();
             return Ok(results);
         }
-        
+
         [HttpGet("genre_search")]
         public async Task<IActionResult> SearchMoviesByGenres([FromQuery] string genres)
         {
@@ -70,7 +182,7 @@ namespace Intex_Winter.Controllers
 
             return Ok(results);
         }
-        
+
         [HttpGet("get_genres")]
         public async Task<IActionResult> GetGenres()
         {
@@ -146,7 +258,61 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-        
+    }
+}
 
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly MoviesDbContext _context;
+
+    public AuthController(MoviesDbContext context)
+    {
+        _context = context;
+    }
+    
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        // var userName = User.Identity?.Name;
+        // var users = _context.MoviesUsers.Where(u => u.Email == userName);
+        //
+        // Console.WriteLine((MoviesUser) users[0].UserId);
+        // return Ok(new { userName });
+        var userName = User.Identity?.Name;
+
+        if (string.IsNullOrEmpty(userName))
+        {
+            return Unauthorized("User is not authenticated.");
+        }
+
+        Console.WriteLine($"Looking for user... {userName}");
+        // var user = _context.MoviesUsers.Where(u => u.Email == userName);
+        var user = _context.MoviesUsers
+            .FirstOrDefault(u => EF.Functions.Like(u.Email, userName));
+
+        
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+        Console.WriteLine("User found");
+
+        // Console.WriteLine($"User ID: {user[0].UserId}, Name: {user.Name}");
+
+        return Ok(
+        //     new 
+        // { 
+        //     user.UserId, 
+        //     user.Name, 
+        //     user.Email,
+        //     user.Phone,
+        //     user.City,
+        //     user.State 
+        //     // Add more fields as needed
+        // }
+            );
     }
 }

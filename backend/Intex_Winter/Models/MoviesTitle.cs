@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Models;
 
-[Keyless]
 [Table("movies_titles")]
 public partial class MoviesTitle
 {
+    [Key]
     [Column("show_id")]
     public string? ShowId { get; set; }
 
