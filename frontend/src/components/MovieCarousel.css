@@ -1,0 +1,18 @@
+.carousel-container {
+  margin: 2rem;
+  overflow-x: auto;
+}
+
+.carousel-title {
+  margin-bottom: 1rem;
+}
+
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
