@@ -1,37 +1,20 @@
 {
   "format": 1,
   "restore": {
-<<<<<<< HEAD
-    "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj": {}
+    "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj": {}
   },
   "projects": {
-    "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj": {
+    "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
+        "projectUniqueName": "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj",
         "projectName": "Intex_Winter",
-        "projectPath": "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
-        "packagesPath": "/Users/larajustus/.nuget/packages/",
-        "outputPath": "/Users/larajustus/Downloads/Winter_Intex_1-10/backend/Intex_Winter/obj/",
+        "projectPath": "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/Intex_Winter.csproj",
+        "packagesPath": "/Users/colemansandy/.nuget/packages/",
+        "outputPath": "/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/backend/Intex_Winter/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/larajustus/.nuget/NuGet/NuGet.Config"
-=======
-    "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj": {}
-  },
-  "projects": {
-    "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
-        "projectName": "Intex_Winter",
-        "projectPath": "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/Intex_Winter.csproj",
-        "packagesPath": "/Users/porter/.nuget/packages/",
-        "outputPath": "/Users/porter/Desktop/Winter_Intex_1-10/backend/Intex_Winter/obj/",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "/Users/porter/.nuget/NuGet/NuGet.Config"
->>>>>>> origin/main
+          "/Users/colemansandy/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -120,7 +103,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.405/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
