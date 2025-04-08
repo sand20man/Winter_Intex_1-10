@@ -1,0 +1,17 @@
+.movie-card {
+  width: 160px;
+  margin-right: 16px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.movie-poster {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.movie-title {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: rgb(0, 0, 0);
+}
