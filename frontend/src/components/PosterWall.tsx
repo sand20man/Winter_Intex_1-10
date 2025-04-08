@@ -50,12 +50,12 @@ const PosterWall = () => {
   return (
     <div>
       <div className="mb-2">
-        <PosterCarousel images={posterImages1} duration={40} slideLeft={true} />
+        <PosterCarousel images={posterImages1} duration={30} slideLeft={true} />
       </div>
       <div className="mb-2">
         <PosterCarousel
           images={posterImages2}
-          duration={50}
+          duration={45}
           slideLeft={false}
         />
       </div>
