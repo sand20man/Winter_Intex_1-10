@@ -47,27 +47,9 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.LoginPath = "/login";
-    options.Events.OnRedirectToLogin = context =>
-    {
-        if (context.Request.Path.StartsWithSegments("/api"))
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return Task.CompletedTask;
-        }
-
-        context.Response.Redirect(context.RedirectUri);
-        return Task.CompletedTask;
-    };
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        context.Response.StatusCode = 403;
-        return Task.CompletedTask;
-    };
+    options.Cookie.Name = ".AspNetCore.Identity.Application"; // ✅ this is the session cookie
 });
 
 builder.Services.AddCors(options =>
@@ -75,7 +57,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+            policy.WithOrigins("http://localhost:3000/", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -86,6 +68,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 
 var app = builder.Build();
 
@@ -210,8 +199,10 @@ app.MapGet("/api/roles", async (UserManager<IdentityUser> userManager, ClaimsPri
     if (currentUser == null) return Results.Unauthorized();
 
     var roles = await userManager.GetRolesAsync(currentUser);
-    return Results.Ok(roles);
+    return Results.Json(new { roles }); // instead of just Results.Ok(roles)
+
 }).RequireAuthorization();
+
 
 app.Run();
 return;
