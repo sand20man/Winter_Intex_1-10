@@ -51,15 +51,19 @@ function AdminPage() {
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (
-    <div className="admin-page">
+    <div className="admin-page container-fluid py-4">
       <AdminTopBar />
-      <h1>Admin Page</h1>
 
-      {!showForm && (
-        <button className="admin-btn btn-add" onClick={() => setShowForm(true)}>
-          Add Movie/TV Show
-        </button>
-      )}
+      <div className="d-flex justify-content-end mb-3">
+        {!showForm && (
+          <button
+            className="btn btn-outline-light me-2"
+            onClick={() => setShowForm(true)}
+          >
+            Add Movie/TV Show
+          </button>
+        )}
+      </div>
 
       {showForm && (
         <NewMovieForm
@@ -86,55 +90,80 @@ function AdminPage() {
         />
       )}
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Type</th>
-            <th>Title</th>
-            <th>Director</th>
-            <th>Cast</th>
-            <th>Country</th>
-            <th>Release Year</th>
-            <th>Rating</th>
-            <th>Duration</th>
-            <th>Description</th>
-            <th>Genre</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {movies.map((m) => (
-            <tr key={m.showId}>
-              <td>{m.showId}</td>
-              <td>{m.type}</td>
-              <td>{m.title}</td>
-              <td>{m.director}</td>
-              <td>{m.cast}</td>
-              <td>{m.country}</td>
-              <td>{m.releaseYear}</td>
-              <td>{m.rating}</td>
-              <td>{m.duration}</td>
-              <td>{m.description}</td>
-              <td>{m.genre}</td>
-              <td>
-                <button
-                  className="admin-btn btn-edit"
-                  onClick={() => setEditingMovie(m)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="admin-btn btn-delete"
-                  onClick={() => handleDelete(m.showId)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="card bg-dark text-light border-secondary mb-4">
+        <div
+          className="card-header text-center text-white"
+          style={{
+            fontSize: '2.5rem', // Big bold headline (adjust up if needed)
+            fontWeight: '700', // Very bold
+            lineHeight: '1.1', // Tight line height
+            wordWrap: 'break-word',
+          }}
+        >
+          Movie/TV Show Information
+        </div>
+        <div className="card-body p-0">
+          <div className="table-responsive">
+            <table className="table table-dark table-striped table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Title</th>
+                  <th>Director</th>
+                  <th>Cast</th>
+                  <th>Country</th>
+                  <th>Release Year</th>
+                  <th>Rating</th>
+                  <th>Duration</th>
+                  <th>Description</th>
+                  <th>Genre</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {movies.map((m) => (
+                  <tr key={m.showId}>
+                    <td>{m.showId}</td>
+                    <td>{m.type}</td>
+                    <td>{m.title}</td>
+                    <td>{m.director}</td>
+                    <td>{m.cast}</td>
+                    <td>{m.country}</td>
+                    <td>{m.releaseYear}</td>
+                    <td>{m.rating}</td>
+                    <td>{m.duration}</td>
+                    <td>{m.description}</td>
+                    <td>{m.genre}</td>
+                    <td>
+                      <button
+                        className="btn btn-outline-light me-3 mb-2"
+                        onClick={() => {
+                          setEditingMovie(m);
+                          window.scrollTo({
+                            top: 0,
+                            left: 0,
+                            behavior: 'auto',
+                          });
+                        }}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="btn btn-danger mb-2"
+                        onClick={() => handleDelete(m.showId)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <Pagination
         currentPage={pageNum}

@@ -8,6 +8,9 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,10 +56,7 @@ function Register() {
 
   return (
     <>
-      <div
-        className="position-fixed top-0 start-0 w-100"
-        style={{ zIndex: 3 }}
-      >
+      <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 3 }}>
         <Navbar onSearchChange={() => {}} homePageBool={true} />
       </div>
 
@@ -98,7 +98,10 @@ function Register() {
         </div>
 
         {/* Form Content */}
-        <div className="container position-relative z-2 text-white" style={{ maxWidth: '500px' }}>
+        <div
+          className="container position-relative z-2 text-white"
+          style={{ maxWidth: '500px' }}
+        >
           <h1 className="mb-4 fw-bold text-start">Register</h1>
           <form onSubmit={handleSubmit}>
             <div className="form-floating mb-3">
@@ -116,7 +119,7 @@ function Register() {
             <div className="form-floating mb-3">
               <input
                 className="form-control"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
                 value={password}
@@ -124,11 +127,21 @@ function Register() {
                 placeholder="Password"
               />
               <label htmlFor="password">Password</label>
+              <span
+                className="position-absolute top-50 end-0 translate-middle-y me-3"
+                style={{ cursor: 'pointer', zIndex: 5 }}
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                <i
+                  className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  style={{ color: '#333' }}
+                ></i>
+              </span>
             </div>
             <div className="form-floating mb-3">
               <input
                 className="form-control"
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
                 name="confirmPassword"
                 value={confirmPassword}
@@ -136,6 +149,16 @@ function Register() {
                 placeholder="Confirm Password"
               />
               <label htmlFor="confirmPassword">Confirm Password</label>
+              <span
+                className="position-absolute top-50 end-0 translate-middle-y me-3"
+                style={{ cursor: 'pointer', zIndex: 5 }}
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+              >
+                <i
+                  className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  style={{ color: '#333' }}
+                ></i>
+              </span>
             </div>
 
             <div className="d-grid mb-3">
