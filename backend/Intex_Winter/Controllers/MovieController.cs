@@ -19,7 +19,7 @@ namespace Intex_Winter.Controllers
         {
             _context = context;
         }
-        
+
         [HttpGet("AllMovies")]
         public IActionResult GetMovies(int pageSize = 20, int pageNum = 1)
         {
@@ -42,7 +42,7 @@ namespace Intex_Winter.Controllers
 
             return Ok(result);
         }
-        
+
         [Authorize(Roles = "admin")]
         [HttpPost("AddMovie")]
         public IActionResult AddMovie([FromBody] MoviesTitle newMovie)
@@ -71,7 +71,8 @@ namespace Intex_Winter.Controllers
             existingMovie.Action = updatedMovie.Action;
             existingMovie.Adventure = updatedMovie.Adventure;
             existingMovie.AnimeSeriesInternationalTvShows = updatedMovie.AnimeSeriesInternationalTvShows;
-            existingMovie.BritishTvShowsDocuseriesInternationalTvShows = updatedMovie.BritishTvShowsDocuseriesInternationalTvShows;
+            existingMovie.BritishTvShowsDocuseriesInternationalTvShows =
+                updatedMovie.BritishTvShowsDocuseriesInternationalTvShows;
             existingMovie.Children = updatedMovie.Children;
             existingMovie.Comedies = updatedMovie.Comedies;
             existingMovie.ComediesDramasInternationalMovies = updatedMovie.ComediesDramasInternationalMovies;
@@ -123,14 +124,14 @@ namespace Intex_Winter.Controllers
 
             return NoContent();
         }
-        
+
         [HttpGet("latestShowid")]
         public IActionResult GetLatestShowId()
         {
             var latestId = _context.MoviesTitles
                 .AsNoTracking()
-                .Select(m => m.ShowId)  // Only fetch ShowIds
-                .AsEnumerable()         // Switch to LINQ-to-Objects
+                .Select(m => m.ShowId) // Only fetch ShowIds
+                .AsEnumerable() // Switch to LINQ-to-Objects
                 .Where(id => id.StartsWith("s") && int.TryParse(id.Substring(1), out _)) // Only valid numeric ids
                 .Select(id => new
                 {
@@ -258,7 +259,7 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-        
+
         [HttpGet("ContentRecommender")]
         public async Task<IActionResult> ContentRecommendedMovies([FromQuery] string showId)
         {
@@ -284,48 +285,5 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-    }
-}
-
-[Authorize]
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
-{
-    private readonly MoviesDbContext _context;
-
-    public AuthController(MoviesDbContext context)
-    {
-        _context = context;
-    }
-    
-    [HttpGet("me")]
-    public IActionResult GetCurrentUser()
-    { 
-        var userName = User.Identity?.Name;
-
-        if (string.IsNullOrEmpty(userName))
-        {
-            return Unauthorized("User is not authenticated.");
-        }
-
-        var user = _context.MoviesUsers
-            .FirstOrDefault(u => u.Email == userName);
-
-        
-        if (user == null)
-        {
-            return NotFound("User not found.");
-        }
-        
-        return Ok(
-            new 
-        { 
-            user.UserId, 
-            user.Name, 
-            user.Email,
-            // Add more fields as needed
-        }
-            );
     }
 }
