@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -36,8 +37,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
     options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
 });
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -47,10 +49,13 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
+    options.Cookie.SameSite = SameSiteMode.None; // Required for cross-origin
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.Name = ".AspNetCore.Identity.Application"; // ✅ this is the session cookie
+    options.Cookie.HttpOnly = true;
+    options.LoginPath = "/login";
 });
+
 
 builder.Services.AddCors(options =>
 {
@@ -143,6 +148,46 @@ else
 
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
+
+app.MapPost("/auth/login", async (
+    HttpContext context,
+    SignInManager<IdentityUser> signInManager,
+    UserManager<IdentityUser> userManager,
+    [FromBody] LoginDto login
+) =>
+{
+    try
+    {
+        var user = await userManager.FindByEmailAsync(login.Email);
+        if (user == null)
+        {
+            return Results.Json(
+                new { message = "Invalid credentials" },
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
+
+        var result = await signInManager.PasswordSignInAsync(
+            user, login.Password, isPersistent: true, lockoutOnFailure: false);
+
+        if (!result.Succeeded)
+        {
+            return Results.Json(
+                new { message = "Invalid login attempt" },
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
+
+        return Results.Ok(new { message = "Login successful" });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("🔥 Login exception: " + ex);
+        return Results.Problem("Server error occurred. See logs.");
+    }
+});
+
+
 
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
