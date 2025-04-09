@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import './Navbar.css';
+import './NavBar.css';
 import SearchBar from './SearchBar';
 import { useEffect, useState } from 'react';
 import { fetchCurrentUser } from '../api/MovieAPI';
