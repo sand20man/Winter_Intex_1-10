@@ -1,0 +1,182 @@
+.arrow-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  transition: color 0.2s;
+}
+.arrow-btn:hover {
+  color: #ccc;
+}
+
+img {
+  max-height: 250px;
+  object-fit: cover;
+}
+
+.category-carousel {
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.carousel-item {
+  transition: all 0.4s ease;
+  opacity: 0.4;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+.carousel-item.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.carousel-item.inactive {
+  opacity: 0.4;
+  transform: scale(0.9);
+}
+
+.category-carousel-wrapper {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.category-carousel {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+.category-carousel::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.carousel-item h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.carousel-item.active h2 {
+  opacity: 1;
+  color: white;
+}
+
+.carousel-item.inactive h2 {
+  opacity: 0.3;
+  color: #aaa;
+}
+
+/* Fade effects on edges */
+.fade-left,
+.fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fade-left {
+  left: 0;
+  background: linear-gradient(to right, black, transparent);
+}
+
+.fade-right {
+  right: 0;
+  background: linear-gradient(to left, black, transparent);
+}
+
+.category-carousel-wrapper {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.category-carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.4s ease;
+}
+
+.carousel-item {
+  min-width: 200px;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.carousel-item h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.carousel-item.center {
+  opacity: 1;
+  transform: scale(1);
+  color: white;
+  z-index: 2;
+}
+
+.carousel-item.left,
+.carousel-item.right {
+  opacity: 0.4;
+  color: #aaa;
+  z-index: 1;
+}
+
+.carousel-item.hidden {
+  display: none;
+}
+
+/* Fade overlays */
+.fade-left,
+.fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.fade-left {
+  left: 0;
+  background: linear-gradient(to right, black, transparent);
+}
+
+.fade-right {
+  right: 0;
+  background: linear-gradient(to left, black, transparent);
+}
+
+.poster-fade-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.fade-poster-left,
+.fade-poster-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.fade-poster-left {
+  left: 0;
+  background: linear-gradient(to right, black, transparent);
+}
+
+.fade-poster-right {
+  right: 0;
+  background: linear-gradient(to left, black, transparent);
+}
