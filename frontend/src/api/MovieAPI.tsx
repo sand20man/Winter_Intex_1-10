@@ -217,7 +217,7 @@ export const getUserRecommendations = async (userId: number) => {
 export const getContentRecommendations = async (showId: string) => {
   try {
     const response = await fetch(
-      `${api_URL}/ContentRecommender?showId=${showId}`,
+      `${api_URL}/Movie/ContentRecommender?showId=${showId}`,
       {
         credentials: 'include',
       }
@@ -250,5 +250,24 @@ export const fetchCurrentUser = async () => {
   } catch (error) {
     console.error('Error fetching user:', error);
     throw error;
+  }
+};
+
+export const submitUserRating = async (
+  showId: string,
+  userId: number,
+  rating: number
+) => {
+  const response = await fetch(`${api_URL}/Auth/rating`, {
+    method: 'POST', // or 'PUT' depending on your backend
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // if you're using cookie auth
+    body: JSON.stringify({ showId, userId, rating }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to submit rating: ${response.status}`);
   }
 };
