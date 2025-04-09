@@ -9,7 +9,7 @@ export default function LogoutButton() {
     try {
       // 1. Sign out of backend first — it has session cookies
       await axios.post(
-        'https://localhost:5000/logout',
+        'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/logout',
         {},
         { withCredentials: true }
       );

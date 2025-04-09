@@ -28,7 +28,7 @@ function Register() {
       setError('Passwords do not match.');
     } else {
       setError('');
-      fetch('https://localhost:5000/register', {
+      fetch('https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

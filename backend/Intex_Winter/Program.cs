@@ -70,10 +70,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+            policy.WithOrigins("https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+
         });
 });
 
@@ -91,6 +92,20 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    // TEMP CORS override for debugging
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
+        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+        return Task.CompletedTask;
+    });
+
+    await next();
+});
+
 
 // Middleware to allow OPTIONS requests before auth and routing
 app.Use(async (context, next) =>
