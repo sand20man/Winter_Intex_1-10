@@ -14,19 +14,13 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SupportNonNullableReferenceTypes();
 });
 
-builder.Services.AddEndpointsApiExplorer(); // already present is fine
-
-// MoviesDbContext → Azure SQL (use secret manager/env var)
 builder.Services.AddDbContext<MoviesDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MovieConnection")));
 
@@ -44,22 +38,30 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 });
 
-
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
-    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email; // Ensure email is stored in claims
+    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 });
-
-builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.Name = ".AspNetCore.Identity.Application";
     options.LoginPath = "/login";
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
 });
 
 builder.Services.AddCors(options =>
@@ -67,37 +69,41 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net") // Replace with your frontend URL
-                .AllowCredentials() // Required to allow cookies
+            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+                .AllowCredentials()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
 });
 
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
 
-
 var app = builder.Build();
+
+// Middleware to allow OPTIONS requests before auth and routing
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == HttpMethods.Options)
+    {
+        context.Response.StatusCode = 204;
+        return;
+    }
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-app.MapControllers();
-app.MapIdentityApi<IdentityUser>();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-if (!app.Environment.IsDevelopment())
+else
 {
     app.Use(async (context, next) =>
     {
@@ -124,17 +130,15 @@ if (!app.Environment.IsDevelopment())
     });
 }
 
+app.MapControllers();
+app.MapIdentityApi<IdentityUser>();
 
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
-
-    // Ensure authentication cookie is removed
     context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
-
     return Results.Ok(new { message = "Logout successful" });
 }).RequireAuthorization();
-
 
 app.MapGet("/pingauth", (ClaimsPrincipal user) =>
 {
@@ -142,9 +146,8 @@ app.MapGet("/pingauth", (ClaimsPrincipal user) =>
     {
         return Results.Unauthorized();
     }
-
-    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com"; // Ensure it's never null
-    return Results.Json(new { email = email }); // Return as JSON
+    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
+    return Results.Json(new { email = email });
 }).RequireAuthorization();
 
 app.Run();
@@ -153,5 +156,5 @@ return;
 void ConfigureServices(IServiceCollection services)
 {
     services.AddSingleton<BlobService>();
-    services.AddControllersWithViews(); // or AddRazorPages();
+    services.AddControllersWithViews();
 }
