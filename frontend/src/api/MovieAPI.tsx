@@ -196,3 +196,23 @@ export const getUserRecommendations = async (userId: number) => {
     throw error;
   }
 };
+
+export const getContentRecommendations = async (showId: string) => {
+  try {
+    const response = await fetch(
+      `${api_URL}/ContentRecommender?showId=${showId}`,
+      {
+        credentials: 'include',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch content recommendations');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching movie:', error);
+    throw error;
+  }
+};
