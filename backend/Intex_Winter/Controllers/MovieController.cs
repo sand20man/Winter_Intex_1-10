@@ -271,12 +271,7 @@ public class AuthController : ControllerBase
     
     [HttpGet("me")]
     public IActionResult GetCurrentUser()
-    {
-        // var userName = User.Identity?.Name;
-        // var users = _context.MoviesUsers.Where(u => u.Email == userName);
-        //
-        // Console.WriteLine((MoviesUser) users[0].UserId);
-        // return Ok(new { userName });
+    { 
         var userName = User.Identity?.Name;
 
         if (string.IsNullOrEmpty(userName))
@@ -284,31 +279,23 @@ public class AuthController : ControllerBase
             return Unauthorized("User is not authenticated.");
         }
 
-        Console.WriteLine($"Looking for user... {userName}");
-        // var user = _context.MoviesUsers.Where(u => u.Email == userName);
         var user = _context.MoviesUsers
-            .FirstOrDefault(u => EF.Functions.Like(u.Email, userName));
+            .FirstOrDefault(u => u.Email == userName);
 
         
         if (user == null)
         {
             return NotFound("User not found.");
         }
-        Console.WriteLine("User found");
-
-        // Console.WriteLine($"User ID: {user[0].UserId}, Name: {user.Name}");
-
+        
         return Ok(
-        //     new 
-        // { 
-        //     user.UserId, 
-        //     user.Name, 
-        //     user.Email,
-        //     user.Phone,
-        //     user.City,
-        //     user.State 
-        //     // Add more fields as needed
-        // }
+            new 
+        { 
+            user.UserId, 
+            user.Name, 
+            user.Email,
+            // Add more fields as needed
+        }
             );
     }
 }
