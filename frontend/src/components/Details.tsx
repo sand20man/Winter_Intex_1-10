@@ -78,6 +78,7 @@ const Details: React.FC = () => {
 
       try {
         const contentRecData = await getContentRecommendations(showId);
+        console.log('Content recs:', contentRecData);
         const contentRecIds = Object.entries(contentRecData)
           .filter(([key]) => key.startsWith('rec'))
           .map(([, value]) => value as string);
@@ -136,8 +137,7 @@ const Details: React.FC = () => {
             {recommendedMovies.length > 0 && (
               <div className="recommended-section mt-4">
                 <h3 className="recommended-heading">
-                  Other people who watch {movie.title}, <br />
-                  enjoyed these films too
+                  Others who watched <strong>{movie.title}</strong>
                 </h3>
                 <MovieCarousel
                   movies={recommendedMovies.map((m) => ({
@@ -149,10 +149,10 @@ const Details: React.FC = () => {
               </div>
             )}
           </div>
+          {/* Right Column: Poster + Star Rating */}
 
-          {/* Right Column: Poster */}
           <div className="col-md-4 d-flex align-items-start justify-content-center">
-            <div className="poster-container">
+            <div className="poster-container flex-column">
               <img
                 src={getPosterUrl(movie.title)}
                 alt={`${movie.title} poster`}
@@ -162,11 +162,14 @@ const Details: React.FC = () => {
                     '/logos/VerticalLogo.png';
                 }}
               />
-
-              <StarRating
-                rating={userRating} // this will come from state or API
-                onRate={handleRating} // call your backend
-              />
+              <div className="star-rating-wrapper">
+                <br />
+                <h6>Rate Your Movie</h6>
+                <StarRating
+                  rating={userRating} // this will come from state or API
+                  onRate={handleRating} // call your backend
+                />
+              </div>
             </div>
           </div>
         </div>
