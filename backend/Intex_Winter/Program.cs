@@ -67,7 +67,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // Replace with your frontend URL
+            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net/") // Replace with your frontend URL
                 .AllowCredentials() // Required to allow cookies
                 .AllowAnyMethod()
                 .AllowAnyHeader();
@@ -94,7 +94,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.Use(async (context, next) =>
     {
-        context.Response.Headers.Append("Content-Security-Policy", 
+        context.Response.Headers.Append("Content-Security-Policy",
             "default-src 'self'; " +
             "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://*.firebaseio.com 'unsafe-inline'; " +
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
@@ -116,8 +116,6 @@ if (!app.Environment.IsDevelopment())
         await next();
     });
 }
-
-
 
 
 app.UseCors("AllowFrontend");
