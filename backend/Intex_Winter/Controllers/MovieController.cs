@@ -254,6 +254,32 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+        
+        [HttpGet("ContentRecommender")]
+        public async Task<IActionResult> ContentRecommendedMovies([FromQuery] string showId)
+        {
+            if (string.IsNullOrEmpty(showId))
+            {
+                return BadRequest("Please provide a movie to be recommended on.");
+            }
+
+            try
+            {
+                var ContentRecommendedMovies = await _context.ContentRecommendations
+                    .FirstOrDefaultAsync(r => r.ShowId == showId);
+
+                if (ContentRecommendedMovies == null)
+                {
+                    return NotFound($"No recommendations found for showId: {showId}");
+                }
+
+                return Ok(ContentRecommendedMovies);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }
 

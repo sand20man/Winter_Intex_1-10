@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchSingle, getPosterUrl, getRecommendations } from '../api/MovieAPI';
+import {
+  fetchSingle,
+  getContentRecommendations,
+  getPosterUrl,
+  getRecommendations,
+} from '../api/MovieAPI';
 import NavBar from './NavBar';
 import './Details.css';
 import MovieCarousel from './MovieCarousel';
@@ -19,6 +24,9 @@ const Details: React.FC = () => {
   const { showId } = useParams<{ showId: string }>();
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [recommendedMovies, setRecommendedMovies] = useState<MovieDetails[]>(
+    []
+  );
+  const [contentRecommended, setContentRecommended] = useState<MovieDetails[]>(
     []
   );
 
@@ -43,6 +51,14 @@ const Details: React.FC = () => {
         );
 
         setRecommendedMovies(recDetails);
+
+        const contentRecData = await getContentRecommendations(showId);
+        const contentRecIds = Object.values(contentRecData).slice(1);
+
+        const contentRecommendedIds = await Promise.all(
+          contentRecIds.map((id) => fetchSingle(id as string))
+        );
+        setContentRecommended(contentRecommendedIds);
       } catch (err) {
         console.error('Error fetching movie details:', err);
       }
@@ -86,9 +102,12 @@ const Details: React.FC = () => {
               </p>
             </div>
 
+            {/* First Carousel: Collaborative Recommendations */}
             {recommendedMovies.length > 0 && (
               <div className="recommended-section mt-4">
-                <h3 className="recommended-heading">You might also like</h3>
+                <h3 className="recommended-heading">
+                  Other people enjoyed these films too
+                </h3>
                 <MovieCarousel
                   movies={recommendedMovies.map((m) => ({
                     showId: m.showId,
@@ -116,6 +135,25 @@ const Details: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Second Carousel: Content-Based Recommendations */}
+      {contentRecommended.length > 0 && (
+        <div className="row mt-5">
+          <div className="col-12">
+            <div className="recommended-section mt-4">
+              <h3 className="recommended-heading">
+                Movies Similar to this one
+              </h3>
+              <MovieCarousel
+                movies={contentRecommended.map((m) => ({
+                  showId: m.showId,
+                  title: m.title,
+                  posterUrl: getPosterUrl(m.title),
+                }))}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
