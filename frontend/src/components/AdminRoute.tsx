@@ -15,18 +15,22 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
             withCredentials: true,
           }
         );
-        console.log(`response: ${response.data}`);
-        setIsAdmin(response.data.includes('admin'));
+
+        console.log('Roles response:', response.data);
+
+        // ✅ assumes response is a raw array like ["admin"]
+        setIsAdmin(
+          Array.isArray(response.data) && response.data.includes('admin')
+        );
       } catch (error) {
+        console.error('Error checking roles:', error);
         setIsAdmin(false);
-        console.log(`Error, ${error}`);
       }
     };
 
     checkRole();
   }, []);
 
-  // Redirect once when determined user is not admin
   useEffect(() => {
     if (isAdmin === false) {
       alert('You are not an admin!');
@@ -34,7 +38,7 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
     }
   }, [isAdmin, navigate]);
 
-  if (isAdmin === null) return <p>Loading...</p>;
+  if (isAdmin === null) return <p>Checking admin privileges...</p>;
   if (!isAdmin) return null;
 
   return children;

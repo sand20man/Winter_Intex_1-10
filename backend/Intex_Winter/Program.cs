@@ -149,45 +149,6 @@ else
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
 
-app.MapPost("/auth/login", async (
-    HttpContext context,
-    SignInManager<IdentityUser> signInManager,
-    UserManager<IdentityUser> userManager,
-    [FromBody] LoginDto login
-) =>
-{
-    try
-    {
-        var user = await userManager.FindByEmailAsync(login.Email);
-        if (user == null)
-        {
-            return Results.Json(
-                new { message = "Invalid credentials" },
-                statusCode: StatusCodes.Status401Unauthorized
-            );
-        }
-
-        var result = await signInManager.PasswordSignInAsync(
-            user, login.Password, isPersistent: true, lockoutOnFailure: false);
-
-        if (!result.Succeeded)
-        {
-            return Results.Json(
-                new { message = "Invalid login attempt" },
-                statusCode: StatusCodes.Status401Unauthorized
-            );
-        }
-
-        return Results.Ok(new { message = "Login successful" });
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("🔥 Login exception: " + ex);
-        return Results.Problem("Server error occurred. See logs.");
-    }
-});
-
-
 
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
@@ -196,64 +157,30 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     return Results.Ok(new { message = "Logout successful" });
 }).RequireAuthorization();
 
-app.MapGet("/pingauth", (ClaimsPrincipal user) =>
+app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
 {
     if (!user.Identity?.IsAuthenticated ?? false)
     {
         return Results.Unauthorized();
     }
 
-    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com"; // Ensure it's never null
-    return Results.Json(new { email = email }); // Return as JSON
-}).RequireAuthorization();
-
-// Create a service scope so you can use DI services like UserManager/RoleManager
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    // Get the role manager and user manager
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-
-    // Define the roles you want to ensure exist
-    string[] roles = { "admin", "user" };
-
-    // Create roles if they don’t already exist
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
-
-    // Check if your admin user exists and is assigned to the "admin" role
-    var adminEmail = "admin@admin.com";
-    var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-    if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "admin"))
-    {
-        await userManager.AddToRoleAsync(adminUser, "admin");
-    }
-}
-
-app.MapGet("/api/roles", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
-{
     var currentUser = await userManager.GetUserAsync(user);
-    if (currentUser == null) return Results.Unauthorized();
+    if (currentUser == null)
+    {
+        return Results.Unauthorized();
+    }
 
     var roles = await userManager.GetRolesAsync(currentUser);
-    return Results.Json(new { roles }); // instead of just Results.Ok(roles)
+    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
+    return Results.Json(new
+    {
+        email = email,
+        roles = roles
+    });
 }).RequireAuthorization();
+
+
 
 
 app.Run();
-return;
-
-void ConfigureServices(IServiceCollection services)
-{
-    services.AddSingleton<BlobService>();
-    services.AddControllersWithViews();
-}
