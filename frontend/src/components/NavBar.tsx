@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import './Navbar.css';
+import './NavBar.css';
 import SearchBar from './SearchBar';
+import { useEffect, useState } from 'react';
+import { fetchCurrentUser } from '../api/MovieAPI';
+import LogoutButton from './LogoutButton';
 
 interface NavbarProps {
   onSearchChange?: (query: string | null) => void;
@@ -12,13 +15,38 @@ const Navbar: React.FC<NavbarProps> = ({
   homePageBool = false,
 }) => {
   const navigate = useNavigate();
+  const [name, setName] = useState<string>('Name');
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        // Get user info from backend
+        const user = await fetchCurrentUser();
+
+        setName(user.name.split(' ')[0]);
+      } catch (error) {
+        console.error('Failed to load recommendations', error);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   return (
     <>
       <nav className="navbar">
         <div className="navbar-left">
-          <div className="navbar-logo" onClick={() => navigate('/movie')}>
-            <img src="/logos/horizontal logo.png" alt="Home logo" height={70} />
+          <div
+            className="navbar-logo"
+            onClick={
+              homePageBool ? () => navigate('/') : () => navigate('/movie')
+            }
+          >
+            <img
+              src="/logos/horizontal_logo_no_background.png"
+              alt="Home logo"
+              height={70}
+            />
           </div>
         </div>
         {homePageBool ? (
@@ -60,7 +88,11 @@ const Navbar: React.FC<NavbarProps> = ({
               </button>
               <div className="navbar-profile">
                 <span className="navbar-avatar">👤</span>
-                <span className="navbar-name">Name</span>
+                <span className="navbar-name">{name}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-gray-800">
+                <h2 className="text-xl font-bold">Admin Dashboard</h2>
+                <LogoutButton />
               </div>
             </div>
           </>

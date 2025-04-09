@@ -43,7 +43,7 @@ function AdminPage() {
       await deleteMovie(showId);
       setMovies(movies.filter((m) => m.showId !== showId));
     } catch (error) {
-      alert('Failed to delete movie. Please try again.');
+      alert(`Failed to delete movie due to ${error}. Please try again.`);
     }
   };
 

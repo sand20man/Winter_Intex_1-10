@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import './Navbar.css';
-
+import './NavBar.css';
 const AdminTopBar = () => {
   const navigate = useNavigate();
 
