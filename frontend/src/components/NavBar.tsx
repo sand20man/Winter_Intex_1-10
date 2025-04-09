@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import SearchBar from './SearchBar';
+import { useEffect, useState } from 'react';
+import { fetchCurrentUser } from '../api/MovieAPI';
 
 interface NavbarProps {
   onSearchChange?: (query: string | null) => void;
@@ -12,6 +14,22 @@ const Navbar: React.FC<NavbarProps> = ({
   homePageBool = false,
 }) => {
   const navigate = useNavigate();
+  const [name, setName] = useState<string>('Name');
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        // Get user info from backend
+        const user = await fetchCurrentUser();
+
+        setName(user.name.split(' ')[0]);
+      } catch (error) {
+        console.error('Failed to load recommendations', error);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   return (
     <>
@@ -60,7 +78,7 @@ const Navbar: React.FC<NavbarProps> = ({
               </button>
               <div className="navbar-profile">
                 <span className="navbar-avatar">👤</span>
-                <span className="navbar-name">Name</span>
+                <span className="navbar-name">{name}</span>
               </div>
             </div>
           </>
