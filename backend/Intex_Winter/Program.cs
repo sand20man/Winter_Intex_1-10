@@ -63,6 +63,11 @@ builder.Services.ConfigureApplicationCookie(options =>
         context.Response.Redirect(context.RedirectUri);
         return Task.CompletedTask;
     };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
 });
 
 builder.Services.AddCors(options =>
@@ -81,15 +86,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        context.Response.StatusCode = 403;
-        return Task.CompletedTask;
-    };
-});
 
 var app = builder.Build();
 
