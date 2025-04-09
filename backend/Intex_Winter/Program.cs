@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Intex_Winter.Data;
 using Intex_Winter.Models;
 using Intex_Winter.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -77,6 +78,14 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
+});
 
 var app = builder.Build();
 
@@ -146,6 +155,46 @@ app.MapGet("/pingauth", (ClaimsPrincipal user) =>
 
     var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com"; // Ensure it's never null
     return Results.Json(new { email = email }); // Return as JSON
+}).RequireAuthorization();
+
+// Create a service scope so you can use DI services like UserManager/RoleManager
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    // Get the role manager and user manager
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+    // Define the roles you want to ensure exist
+    string[] roles = { "admin", "user" };
+
+    // Create roles if they don’t already exist
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Check if your admin user exists and is assigned to the "admin" role
+    var adminEmail = "admin@admin.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "admin"))
+    {
+        await userManager.AddToRoleAsync(adminUser, "admin");
+    }
+}
+
+app.MapGet("/api/roles", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
+{
+    var currentUser = await userManager.GetUserAsync(user);
+    if (currentUser == null) return Results.Unauthorized();
+
+    var roles = await userManager.GetRolesAsync(currentUser);
+    return Results.Ok(roles);
 }).RequireAuthorization();
 
 app.Run();

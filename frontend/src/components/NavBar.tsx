@@ -3,6 +3,7 @@ import './Navbar.css';
 import SearchBar from './SearchBar';
 import { useEffect, useState } from 'react';
 import { fetchCurrentUser } from '../api/MovieAPI';
+import LogoutButton from './LogoutButton';
 
 interface NavbarProps {
   onSearchChange?: (query: string | null) => void;
@@ -79,6 +80,10 @@ const Navbar: React.FC<NavbarProps> = ({
               <div className="navbar-profile">
                 <span className="navbar-avatar">👤</span>
                 <span className="navbar-name">{name}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-gray-800">
+                <h2 className="text-xl font-bold">Admin Dashboard</h2>
+                <LogoutButton />
               </div>
             </div>
           </>

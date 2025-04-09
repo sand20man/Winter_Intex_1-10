@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MovieController : ControllerBase
@@ -42,6 +43,7 @@ namespace Intex_Winter.Controllers
             return Ok(result);
         }
         
+        [Authorize(Roles = "admin")]
         [HttpPost("AddMovie")]
         public IActionResult AddMovie([FromBody] MoviesTitle newMovie)
         {
@@ -50,6 +52,7 @@ namespace Intex_Winter.Controllers
             return Ok(newMovie);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("UpdateMovie/{showId}")]
         public IActionResult UpdateMovie(string showId, [FromBody] MoviesTitle updatedMovie)
         {
@@ -104,6 +107,7 @@ namespace Intex_Winter.Controllers
             return Ok(existingMovie);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("DeleteMovie/{showId}")]
         public IActionResult DeleteMovie(string showId)
         {
