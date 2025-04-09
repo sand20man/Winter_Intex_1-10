@@ -170,8 +170,17 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
   }
 };
 
+// export const getPosterUrl = (title: string) => {
+//   return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(title)}.jpg`;
+// };
+
 export const getPosterUrl = (title: string) => {
-  return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(title)}.jpg`;
+  const sanitizedTitle = title
+    .replace(/[^a-z0-9 ]/gi, '') // Allow only letters, numbers, and spaces
+    .trim(); // Trim leading/trailing spaces only
+
+  const fileName = `${sanitizedTitle}.jpg`;
+  return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(fileName)}`;
 };
 
 export const getRecommendations = async (showId: string) => {
@@ -217,7 +226,7 @@ export const getUserRecommendations = async (userId: number) => {
 export const getContentRecommendations = async (showId: string) => {
   try {
     const response = await fetch(
-      `${api_URL}/Movie/ContentRecommender?showId=${showId}`,
+      `https://localhost:5000/api/Movie/ContentRecommender?showId=${showId}`,
       {
         credentials: 'include',
       }
