@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import '/Users/colemansandy/Desktop/BYU/JuniorCore/intex winter/frontend/src/components/NavBar.css';
+import './Navbar.css';
 import SearchBar from './SearchBar';
 import { useEffect, useState } from 'react';
 import { fetchCurrentUser } from '../api/MovieAPI';
