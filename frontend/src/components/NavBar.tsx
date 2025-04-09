@@ -36,8 +36,17 @@ const Navbar: React.FC<NavbarProps> = ({
     <>
       <nav className="navbar">
         <div className="navbar-left">
-          <div className="navbar-logo" onClick={() => navigate('/movie')}>
-            <img src="/logos/horizontal logo.png" alt="Home logo" height={70} />
+          <div
+            className="navbar-logo"
+            onClick={
+              homePageBool ? () => navigate('/') : () => navigate('/movie')
+            }
+          >
+            <img
+              src="/logos/horizontal_logo_no_background.png"
+              alt="Home logo"
+              height={70}
+            />
           </div>
         </div>
         {homePageBool ? (
