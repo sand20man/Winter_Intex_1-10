@@ -13,7 +13,8 @@ export const fetchMovies = async (
 ): Promise<FetchMoviesResponse> => {
   try {
     const response = await fetch(
-      `${api_URL}/Movie/AllMovies?pageSize=${pageSize}&pageNum=${pageNum}`
+      `${api_URL}/Movie/AllMovies?pageSize=${pageSize}&pageNum=${pageNum}`,
+      { method: 'GET', credentials: 'include' }
     );
 
     if (!response.ok) {
@@ -34,6 +35,7 @@ export const updateMovie = async (
   try {
     const response = await fetch(`${api_URL}/Movie/UpdateMovie/${showId}`, {
       method: 'PUT',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -51,6 +53,7 @@ export const deleteMovie = async (showId: string): Promise<void> => {
   try {
     const response = await fetch(`${api_URL}/Movie/DeleteMovie/${showId}`, {
       method: 'DELETE',
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -63,7 +66,10 @@ export const deleteMovie = async (showId: string): Promise<void> => {
 };
 
 export const getNextShowId = async (): Promise<string> => {
-  const response = await fetch(`${api_URL}/Movie/latestShowid`);
+  const response = await fetch(`${api_URL}/Movie/latestShowid`, {
+    method: 'GET',
+    credentials: 'include',
+  });
   const lastId = await response.text(); // e.g. 's8806'
 
   const num = parseInt(lastId.slice(1)) + 1; // Get the number, increment
@@ -74,6 +80,7 @@ export const addMovie = async (newMovie: Movie): Promise<Movie> => {
   try {
     const response = await fetch(`${api_URL}/Movie/AddMovie`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },

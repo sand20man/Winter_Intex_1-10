@@ -9,9 +9,10 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
   useEffect(() => {
     const checkRole = async () => {
       try {
-        const response = await axios.get('/api/roles', {
+        const response = await axios.get('https://localhost:5000/api/roles', {
           withCredentials: true,
         });
+        console.log(`response: ${response.data}`);
         setIsAdmin(response.data.includes('admin'));
       } catch (error) {
         setIsAdmin(false);
