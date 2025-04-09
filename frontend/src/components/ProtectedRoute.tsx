@@ -12,10 +12,13 @@ export default function ProtectedRoute({
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('https://localhost:5000/pingauth', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const response = await fetch(
+          'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
