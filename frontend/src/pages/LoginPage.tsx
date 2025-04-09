@@ -11,6 +11,7 @@ function LoginPage() {
   const [password, setPassword] = useState<string>('');
   const [rememberme, setRememberme] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
@@ -149,7 +150,7 @@ function LoginPage() {
             <div className="form-floating mb-3">
               <input
                 className="form-control"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
                 value={password}
@@ -157,11 +158,22 @@ function LoginPage() {
                 placeholder="Password"
               />
               <label htmlFor="password">Password</label>
+
+              <span
+                className="position-absolute top-50 end-0 translate-middle-y me-3"
+                style={{ cursor: 'pointer', zIndex: 5 }}
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                <i
+                  className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}
+                  style={{ color: '#333' }}
+                ></i>
+              </span>
             </div>
 
-            <div className="form-check mb-3">
+            <div className="mb-3 d-flex align-items-center">
               <input
-                className="form-check-input"
+                className="form-check-input me-2"
                 type="checkbox"
                 id="rememberme"
                 name="rememberme"

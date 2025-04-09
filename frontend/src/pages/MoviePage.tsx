@@ -29,8 +29,11 @@ function MoviePage() {
     const loadRecommendations = async () => {
       try {
         // Get user info from backend
+        console.log('Attempting to fetch current user');
         const user = await fetchCurrentUser();
+        console.log('User fetched');
         const userId = user.userId;
+        console.log(userId);
 
         const recData = await getUserRecommendations(userId);
         const recIds = [
