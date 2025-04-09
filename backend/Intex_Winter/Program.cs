@@ -80,6 +80,13 @@ builder.Services.AddSingleton<BlobService>();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
 
@@ -116,12 +123,6 @@ if (!app.Environment.IsDevelopment())
         await next();
     });
 }
-
-
-app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 
 
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
