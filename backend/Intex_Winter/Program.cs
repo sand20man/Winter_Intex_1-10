@@ -63,6 +63,11 @@ builder.Services.ConfigureApplicationCookie(options =>
         context.Response.Redirect(context.RedirectUri);
         return Task.CompletedTask;
     };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = 403;
+        return Task.CompletedTask;
+    };
 });
 
 builder.Services.AddCors(options =>
@@ -82,29 +87,20 @@ builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUser
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        context.Response.StatusCode = 403;
-        return Task.CompletedTask;
-    };
-});
-
 var app = builder.Build();
 
-app.Use(async (context, next) =>
-{
-    // TEMP CORS override for debugging
-    context.Response.OnStarting(() =>
-    {
-        context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
-        context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-        return Task.CompletedTask;
-    });
+// app.Use(async (context, next) =>
+// {
+//     // TEMP CORS override for debugging
+//     context.Response.OnStarting(() =>
+//     {
+//         context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
+//         context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+//         return Task.CompletedTask;
+//     });
 
-    await next();
-});
+//     await next();
+// });
 
 
 // Middleware to allow OPTIONS requests before auth and routing
@@ -119,6 +115,7 @@ app.Use(async (context, next) =>
 });
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
