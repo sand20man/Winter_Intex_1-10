@@ -48,36 +48,38 @@ const Pagination = ({
 
   return (
     <div>
-      <div className="pagination">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => onPageChange(currentPage - 1)}
-        >
-          Previous
-        </button>
+      <div className="d-flex justify-content-center">
+        <div className="pagination">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => onPageChange(currentPage - 1)}
+          >
+            Previous
+          </button>
 
-        {generatePageNumbers().map((num, idx) =>
-          typeof num === 'number' ? (
-            <button
-              key={idx}
-              onClick={() => onPageChange(num)}
-              className={currentPage === num ? 'active' : ''}
-            >
-              {num}
-            </button>
-          ) : (
-            <span key={idx} className="px-2">
-              {num}
-            </span>
-          )
-        )}
+          {generatePageNumbers().map((num, idx) =>
+            typeof num === 'number' ? (
+              <button
+                key={idx}
+                onClick={() => onPageChange(num)}
+                className={currentPage === num ? 'active' : ''}
+              >
+                {num}
+              </button>
+            ) : (
+              <span key={idx} className="px-2">
+                {num}
+              </span>
+            )
+          )}
 
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => onPageChange(currentPage + 1)}
-        >
-          Next
-        </button>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       <div className="pagination-controls">
@@ -107,7 +109,7 @@ const Pagination = ({
             min={1}
             max={totalPages}
           />
-          <button className="btn-go" onClick={handleJump}>
+          <button className="btn btn-outline-light me-2" onClick={handleJump}>
             Go
           </button>
         </div>

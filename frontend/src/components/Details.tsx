@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
+  fetchCurrentUser,
   fetchSingle,
   getContentRecommendations,
   getPosterUrl,
   getRecommendations,
+  submitUserRating,
 } from '../api/MovieAPI';
 import NavBar from './NavBar';
 import './Details.css';
 import MovieCarousel from './MovieCarousel';
+import StarRating from './StarRating';
 
 interface MovieDetails {
   showId: string;
@@ -29,14 +32,34 @@ const Details: React.FC = () => {
   const [contentRecommended, setContentRecommended] = useState<MovieDetails[]>(
     []
   );
+  const [userRating, setUserRating] = useState<number>(0);
+
+  const handleRating = async (newRating: number) => {
+    setUserRating(newRating); // optimistic UI update
+
+    try {
+      // Get user info from backend
+      const user = await fetchCurrentUser();
+      const userId = user.userId;
+      await submitUserRating(showId!, userId, newRating);
+    } catch (err) {
+      console.error('Failed to submit rating:', err);
+      // Optionally rollback or show toast
+    }
+  };
 
   useEffect(() => {
-    const fetchMovie = async () => {
-      try {
-        if (!showId) return;
-        const data = await fetchSingle(showId);
-        setMovie(data);
+    if (!showId) return;
 
+    const fetchMovieDetails = async () => {
+      try {
+        const movieData = await fetchSingle(showId);
+        setMovie(movieData);
+      } catch (error) {
+        console.error('Failed to fetch the movie', error);
+      }
+
+      try {
         const recData = await getRecommendations(showId);
         const recIds = [
           recData.rec1,
@@ -45,25 +68,33 @@ const Details: React.FC = () => {
           recData.rec4,
           recData.rec5,
         ];
-
         const recDetails = await Promise.all(
           recIds.map((id) => fetchSingle(id))
         );
-
         setRecommendedMovies(recDetails);
+      } catch (error) {
+        console.error('Collaborative Filter Recommender issue', error);
+      }
 
+      try {
         const contentRecData = await getContentRecommendations(showId);
-        const contentRecIds = Object.values(contentRecData).slice(1);
+        const contentRecIds = Object.entries(contentRecData)
+          .filter(([key]) => key.startsWith('rec'))
+          .map(([, value]) => value as string);
 
-        const contentRecommendedIds = await Promise.all(
-          contentRecIds.map((id) => fetchSingle(id as string))
+        const contentDetails = await Promise.all(
+          contentRecIds.map(
+            (id) => fetchSingle(id).catch(() => null) // silently skip any failed fetches
+          )
         );
-        setContentRecommended(contentRecommendedIds);
-      } catch (err) {
-        console.error('Error fetching movie details:', err);
+
+        setContentRecommended(contentDetails.filter((m) => m !== null));
+      } catch (error) {
+        console.error('Content Filter Recommender issue', error);
       }
     };
-    fetchMovie();
+
+    fetchMovieDetails();
   }, [showId]);
 
   if (!movie) {
@@ -74,8 +105,9 @@ const Details: React.FC = () => {
     <>
       <NavBar />
       <div className="container details-container">
+        {/* Movie Details & Poster */}
         <div className="row">
-          {/* Left Column: Movie Info and Recommendations */}
+          {/* Left Column */}
           <div className="col-md-8">
             <div className="movie-info">
               <h2 className="movie-detail-title">
@@ -86,11 +118,9 @@ const Details: React.FC = () => {
               <p>
                 <strong>Directed by:</strong> {movie.director?.trim() || 'N/A'}
               </p>
-
               <div>
                 <strong>Cast:</strong> {movie.cast || 'N/A'}
               </div>
-
               <br />
               <div>
                 <strong>Rating:</strong> {movie.rating || 'N/A'}
@@ -102,11 +132,12 @@ const Details: React.FC = () => {
               </p>
             </div>
 
-            {/* First Carousel: Collaborative Recommendations */}
+            {/* Collaborative Carousel */}
             {recommendedMovies.length > 0 && (
               <div className="recommended-section mt-4">
                 <h3 className="recommended-heading">
-                  Other people enjoyed these films too
+                  Other people who watch {movie.title}, <br />
+                  enjoyed these films too
                 </h3>
                 <MovieCarousel
                   movies={recommendedMovies.map((m) => ({
@@ -131,29 +162,34 @@ const Details: React.FC = () => {
                     '/logos/VerticalLogo.png';
                 }}
               />
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Second Carousel: Content-Based Recommendations */}
-      {contentRecommended.length > 0 && (
-        <div className="row mt-5">
-          <div className="col-12">
-            <div className="recommended-section mt-4">
-              <h3 className="recommended-heading">
-                Movies Similar to this one
-              </h3>
-              <MovieCarousel
-                movies={contentRecommended.map((m) => ({
-                  showId: m.showId,
-                  title: m.title,
-                  posterUrl: getPosterUrl(m.title),
-                }))}
+
+              <StarRating
+                rating={userRating} // this will come from state or API
+                onRate={handleRating} // call your backend
               />
             </div>
           </div>
         </div>
-      )}
+        {/* Content-Based Carousel - Outside the previous row */}
+        {contentRecommended.length > 0 && (
+          <div className="row mt-5">
+            <div className="col-12">
+              <div className="recommended-section mt-4">
+                <h3 className="recommended-heading">
+                  Movies similar to {movie.title}
+                </h3>
+                <MovieCarousel
+                  movies={contentRecommended.map((m) => ({
+                    showId: m.showId,
+                    title: m.title,
+                    posterUrl: getPosterUrl(m.title),
+                  }))}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
