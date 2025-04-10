@@ -1,4 +1,4 @@
 // src/config.ts
 
 export const API_URL =
-  'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net';
+  'https://winterintexbaby-fgcwhuchdfdxf4ev.eastus-01.azurewebsites.net';
