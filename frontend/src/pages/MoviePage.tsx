@@ -25,6 +25,8 @@ function MoviePage() {
   const [error, setError] = useState<string | null>(null);
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
 
   // Fetch recommendations
   // Fetch all genres once
@@ -172,7 +174,14 @@ function MoviePage() {
 
   return (
     <>
-      <Navbar onSearchChange={setSearchQuery} homePageBool={false} />
+      <Navbar
+        onSearchChange={setSearchQuery}
+        homePageBool={false}
+        showSearch={showSearch}
+        setShowSearch={setShowSearch}
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+      />
       <GenreFilter onGenreSelect={setSelectedGenre} />
 
       {!searchQuery && !selectedGenre && recommendedMovies.length > 0 && (

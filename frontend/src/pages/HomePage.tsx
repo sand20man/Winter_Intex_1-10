@@ -98,7 +98,14 @@ function HomePage() {
         className="position-fixed top-0 start-0 w-100"
         style={{ zIndex: 10 }}
       >
-        <Navbar onSearchChange={() => {}} homePageBool={true} />
+        <Navbar
+          onSearchChange={() => {}}
+          homePageBool={true}
+          showSearch={false}
+          setShowSearch={() => {}}
+          searchInput=""
+          setSearchInput={() => {}}
+        />
       </div>
 
       <div className="position-relative">
@@ -270,7 +277,7 @@ function HomePage() {
         })}
       </div>
 
-      <Footer />
+      <Footer homePageBool={false} />
     </>
   );
 }
