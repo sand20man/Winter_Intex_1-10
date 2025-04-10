@@ -36,7 +36,7 @@ function MoviePage() {
         }
       )
         .then((res) => res.json())
-        .then((data) => console.log(`User data ${data.name}, ${data.email}`))
+        .then((data) => console.log(`User data ${data.roles}, ${data.email}`))
         .catch((err) => console.error('PingAuth Fetch failed:', err));
 
       try {

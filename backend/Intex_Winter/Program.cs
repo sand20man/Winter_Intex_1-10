@@ -62,7 +62,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000/", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -82,19 +82,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 
 var app = builder.Build();
-
-// app.Use(async (context, next) =>
-// {
-//     // TEMP CORS override for debugging
-//     context.Response.OnStarting(() =>
-//     {
-//         context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
-//         context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-//         return Task.CompletedTask;
-//     });
-
-//     await next();
-// });
 
 
 // Middleware to allow OPTIONS requests before auth and routing
@@ -157,9 +144,7 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     return Results.Ok(new { message = "Logout successful" });
 }).RequireAuthorization();
 
-using Microsoft.AspNetCore.Identity;
-
-public static async Task SeedRoles(IServiceProvider serviceProvider)
+async Task SeedRoles(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
@@ -181,7 +166,12 @@ public static async Task SeedRoles(IServiceProvider serviceProvider)
         await userManager.AddToRoleAsync(adminUser, "admin");
     }
 }
-// TODO
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRoles(services); // THIS calls the seeding function
+}
 
 app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
 {
