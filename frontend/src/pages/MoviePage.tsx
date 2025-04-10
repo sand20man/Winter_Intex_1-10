@@ -13,7 +13,6 @@ import {
   fetchCurrentUser,
 } from '../api/MovieAPI';
 import '../components/MovieCard.css';
-import { API_URL } from '../config';
 import GenreFilter from '../components/GenreFilter';
 
 function MoviePage() {
@@ -25,49 +24,20 @@ function MoviePage() {
   const [error, setError] = useState<string | null>(null);
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
 
   // Fetch recommendations
   // Fetch all genres once
   useEffect(() => {
     const loadRecommendations = async () => {
-      let email = '';
-      console.log('Getting users credentials');
-      await fetch(`${API_URL}/pingauth`, {
-        method: 'GET',
-        credentials: 'include',
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          email = data.email;
-          console.log(`Email: ${data.email}`);
-        })
-        .catch((err) => console.error('PingAuth Fetch failed:', err));
-
-      console.log('fetching user role through loops');
-      const encodedEmail = encodeURIComponent(email);
-      const response = await fetch(
-        `${API_URL}/get-role-by-email?email=${encodedEmail}`,
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      );
-      console.log('data retrieval...');
-      const data = await response.json();
-      console.log(`data: ${data}`);
-
-      if (data.role === 'admin') {
-        console.log('user is admin');
-      } else {
-        console.log('user is not admin');
-      }
-
       try {
         // Get user info from backend
         console.log('Attempting to fetch current user');
         const user = await fetchCurrentUser();
         console.log('User fetched');
         const userId = user.userId;
+        console.log(`Typeof userId: ${typeof userId}`);
         console.log(`UserId after fetch: ${userId}`);
 
         const recData = await getUserRecommendations(userId);
@@ -172,7 +142,14 @@ function MoviePage() {
 
   return (
     <>
-      <Navbar onSearchChange={setSearchQuery} homePageBool={false} />
+      <Navbar
+        onSearchChange={setSearchQuery}
+        homePageBool={false}
+        showSearch={showSearch}
+        setShowSearch={setShowSearch}
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+      />
       <GenreFilter onGenreSelect={setSelectedGenre} />
 
       {!searchQuery && !selectedGenre && recommendedMovies.length > 0 && (
