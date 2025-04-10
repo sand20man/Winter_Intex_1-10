@@ -10,7 +10,7 @@ import {
   getPosterUrl,
   getUserRecommendations,
   fetchSingle,
-  fetchCurrentUser,
+  // fetchCurrentUser,
 } from '../api/MovieAPI';
 import '../components/MovieCard.css';
 
