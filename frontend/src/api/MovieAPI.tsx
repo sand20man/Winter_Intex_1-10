@@ -298,7 +298,7 @@ export const submitUserRating = async (
   }
 };
 
-export async function registerUser(email: string, password: string) {
+export const registerUser = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: {
@@ -314,6 +314,7 @@ export async function registerUser(email: string, password: string) {
   }
 
   return data;
+<<<<<<< HEAD
 }
 
 export const fetchUserRating = async (
@@ -345,4 +346,6 @@ export const fetchUserRating = async (
     console.error('Error fetching user rating:', err);
     return 0;
   }
+=======
+>>>>>>> 0af358e (Fix navbar view on privacy page)
 };

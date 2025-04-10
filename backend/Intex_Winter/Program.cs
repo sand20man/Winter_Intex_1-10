@@ -57,6 +57,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     
     // Default SignIn settings.
     options.SignIn.RequireConfirmedEmail = true;
+    // options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
     
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
@@ -82,18 +83,18 @@ builder.Services.ConfigureApplicationCookie(options =>
     //     }
     // };
 
-    options.Events.OnRedirectToLogin = context =>
-    {
-        var consent = context.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        }
+    // options.Events.OnRedirectToLogin = context =>
+    // {
+    //     var consent = context.Request.Cookies["cookie_consent"];
+    //     if (consent != "true")
+    //     {
+    //         context.Response.StatusCode = StatusCodes.Status403Forbidden;
+    //         return Task.CompletedTask;
+    //     }
 
-        context.Response.Redirect(context.RedirectUri);
-        return Task.CompletedTask;
-    };
+    //     context.Response.Redirect(context.RedirectUri);
+    //     return Task.CompletedTask;
+    // };
 });
 
 builder.Services.AddCors(options =>
