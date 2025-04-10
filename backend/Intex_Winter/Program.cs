@@ -199,4 +199,39 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
     });
 }).RequireAuthorization();
 
+app.MapGet("/get-role-by-email", async (
+    [FromQuery] string email,
+    UserManager<IdentityUser> userManager,
+    RoleManager<IdentityRole> roleManager,
+    ApplicationDbContext db) =>
+{
+    var user = await userManager.FindByEmailAsync(email);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    var userId = user.Id;
+
+    var roleId = await db.UserRoles
+        .Where(ur => ur.UserId == userId)
+        .Select(ur => ur.RoleId)
+        .FirstOrDefaultAsync();
+
+    if (roleId == null)
+    {
+        return Results.Ok(new { role = "none" });
+    }
+
+    var roleName = await db.Roles
+        .Where(r => r.Id == roleId)
+        .Select(r => r.Name)
+        .FirstOrDefaultAsync();
+
+    return Results.Ok(new
+    {
+        role = roleName ?? "none"
+    });
+});
+
 app.Run();

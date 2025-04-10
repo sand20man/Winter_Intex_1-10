@@ -27,6 +27,7 @@ function MoviePage() {
   // Fetch all genres once
   useEffect(() => {
     const loadRecommendations = async () => {
+      let email = '';
       console.log('Getting users credentials');
       await fetch(
         'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
@@ -36,8 +37,19 @@ function MoviePage() {
         }
       )
         .then((res) => res.json())
-        .then((data) => console.log(`User data ${data.roles}, ${data.email}`))
+        .then((data) => (email = data.email))
         .catch((err) => console.error('PingAuth Fetch failed:', err));
+
+      const response = await fetch(`/get-role-by-email?email=${email}`, {
+        credentials: 'include',
+      });
+      const data = await response.json();
+
+      if (data.role === 'admin') {
+        console.log('user is admin');
+      } else {
+        console.log('user is not admin');
+      }
 
       try {
         // Get user info from backend
