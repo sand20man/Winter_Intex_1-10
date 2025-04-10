@@ -27,6 +27,9 @@ function MoviePage() {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const [genreLoadedCounts, setGenreLoadedCounts] = useState<
+    Record<string, number>
+  >({});
 
   // Fetch recommendations
   // Fetch all genres once
@@ -120,6 +123,7 @@ function MoviePage() {
 
   // Fetch movies for each genre
   useEffect(() => {
+    const initialCounts: Record<string, number> = {};
     const loadMoviesByGenre = async () => {
       setLoading(true);
       try {
@@ -129,10 +133,12 @@ function MoviePage() {
           genreList.map(async (genre) => {
             const movies = await fetchGenre(genre);
             allGenreMovies[genre] = movies;
+            initialCounts[genre] = movies.length;
           })
         );
 
         setGenreMovies(allGenreMovies);
+        setGenreLoadedCounts(initialCounts);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -162,6 +168,39 @@ function MoviePage() {
     }
   }, [searchQuery]);
 
+  const handleGenreScroll = async (genre: string) => {
+    const alreadyLoaded = genreLoadedCounts[genre] || 0;
+
+    try {
+      const newMovies = await fetchGenre(genre, alreadyLoaded);
+
+      if (newMovies.length === 0) {
+        console.log(`No more movies to load for genre: ${genre}`);
+        return;
+      }
+
+      setGenreMovies((prev) => ({
+        ...prev,
+        [genre]: [...(prev[genre] || []), ...newMovies],
+      }));
+
+      setGenreLoadedCounts((prev) => ({
+        ...prev,
+        [genre]: alreadyLoaded + newMovies.length,
+      }));
+    } catch (error) {
+      console.error(`Failed to load more movies for ${genre}`, error);
+    }
+  };
+
+  const handleHomeClick = () => {
+    setSearchQuery(null);
+    setSearchResult([]);
+    setSelectedGenre(null);
+    setSearchInput('');
+    setShowSearch(false);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[80vh] bg-neutral-900 text-white">
@@ -181,6 +220,7 @@ function MoviePage() {
         setShowSearch={setShowSearch}
         searchInput={searchInput}
         setSearchInput={setSearchInput}
+        onHomeClick={handleHomeClick}
       />
       <GenreFilter onGenreSelect={setSelectedGenre} />
 
@@ -253,6 +293,8 @@ function MoviePage() {
                     title: m.title,
                     posterUrl: `/Movie Posters/${m.title}.jpg`,
                   }))}
+                  genre={genre} // only for genre carousels
+                  onEndReached={handleGenreScroll}
                 />
                 <br />
               </div>
