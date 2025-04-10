@@ -63,8 +63,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.Cookie.SameSite = SameSiteMode.None;              // ✅ Needed for cross-origin
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // ⚠️ Allows HTTP in dev
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
 
     options.Events.OnRedirectToLogin = context =>
@@ -86,17 +86,17 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
-                .AllowCredentials()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .SetIsOriginAllowedToAllowWildcardSubdomains();
-
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "https://jolly-plant-06ec5441e.6.azurestaticapps.net"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
+
 
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
@@ -122,6 +122,7 @@ app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 if (app.Environment.IsDevelopment())
 {
