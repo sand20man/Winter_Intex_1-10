@@ -315,8 +315,7 @@ export const registerUser = async (email: string, password: string) => {
   }
 
   return data;
-<<<<<<< HEAD
-}
+};
 
 export const fetchUserRating = async (
   showId: string,
@@ -347,6 +346,4 @@ export const fetchUserRating = async (
     console.error('Error fetching user rating:', err);
     return 0;
   }
-=======
->>>>>>> 0af358e (Fix navbar view on privacy page)
 };

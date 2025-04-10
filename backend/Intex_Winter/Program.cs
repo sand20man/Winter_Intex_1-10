@@ -70,7 +70,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.LoginPath = "/login";
-<<<<<<< HEAD
     
     // options.Events.OnValidatePrincipal = async context =>
     // {
@@ -82,9 +81,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     //         context.ShouldRenew = false; // Optional: prevents cookie renewal
     //     }
     // };
-=======
-});
->>>>>>> origin/main
 
     // options.Events.OnRedirectToLogin = context =>
     // {
