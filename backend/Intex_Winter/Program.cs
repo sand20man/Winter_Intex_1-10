@@ -53,7 +53,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 4;
     
     // Default SignIn settings.
-    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
     
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
@@ -75,7 +75,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+            policy.WithOrigins("http://localhost:3000/", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -155,7 +155,7 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     await signInManager.SignOutAsync();
     context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
     return Results.Ok(new { message = "Logout successful" });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 async Task SeedRoles(IServiceProvider serviceProvider)
 {
@@ -210,7 +210,7 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
         roles = roles,
         claims = allClaims
     });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 app.MapGet("/get-role-by-email", async (
     [FromQuery] string email,
@@ -245,7 +245,7 @@ app.MapGet("/get-role-by-email", async (
     {
         role = roleName ?? "none"
     });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 app.MapGet("/get-user-id", async (
     [FromQuery] string email,
