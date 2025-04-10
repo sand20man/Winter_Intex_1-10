@@ -12,9 +12,10 @@ function PrivacyPage() {
       try {
         // Get user info from backend
         console.log('Attempting to fetch current user');
-        await fetchCurrentUser();
+        const user = await fetchCurrentUser();
 
-        setHomePageBool(false);
+        if (user.userId !== 0) setHomePageBool(false);
+        else setHomePageBool(true);
       } catch (error) {
         console.error('Failed to load recommendations', error);
         setHomePageBool(true);
