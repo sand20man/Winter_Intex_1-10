@@ -132,8 +132,7 @@ else
         await next();
     });
 }
-app.UseSwagger();
-app.UseSwaggerUI();
+
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
 
@@ -234,5 +233,7 @@ app.MapGet("/get-role-by-email", async (
         role = roleName ?? "none"
     });
 });//.RequireAuthorization();
+
+app.MapGet("/test-alive", () => "I am alive!");
 
 app.Run();
