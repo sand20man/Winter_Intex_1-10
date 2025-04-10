@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Intex_Winter.Data;
 using Intex_Winter.Models;
 using Intex_Winter.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -50,11 +51,36 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.Cookie.SameSite = SameSiteMode.None; // Required for cross-origin
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.LoginPath = "/login";
+
+    options.Events.OnValidatePrincipal = async context =>
+    {
+        var consent = context.HttpContext.Request.Cookies["cookie_consent"];
+        if (consent != "true")
+        {
+            // Sign out the user if consent was withdrawn or not granted
+            await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            context.ShouldRenew = false; // Optional: prevents cookie renewal
+        }
+    };
+
+    options.Events.OnRedirectToLogin = context =>
+    {
+        var consent = context.Request.Cookies["cookie_consent"];
+        if (consent != "true")
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
 });
+
 
 
 builder.Services.AddCors(options =>
@@ -94,6 +120,24 @@ app.Use(async (context, next) =>
     }
     await next();
 });
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.Equals("/login", StringComparison.OrdinalIgnoreCase)
+        && context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
+    {
+        var consent = context.Request.Cookies["cookie_consent"];
+        if (consent != "true")
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsync("Cookie consent required to log in.");
+            return;
+        }
+    }
+
+    await next();
+});
+
 
 app.UseHttpsRedirection();
 app.UseRouting();
