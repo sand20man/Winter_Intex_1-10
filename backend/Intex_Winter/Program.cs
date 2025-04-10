@@ -67,32 +67,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.LoginPath = "/login";
-
-    options.Events.OnValidatePrincipal = async context =>
-    {
-        var consent = context.HttpContext.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            // Sign out the user if consent was withdrawn or not granted
-            await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-            context.ShouldRenew = false; // Optional: prevents cookie renewal
-        }
-    };
-
-    options.Events.OnRedirectToLogin = context =>
-    {
-        var consent = context.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        }
-
-        context.Response.Redirect(context.RedirectUri);
-        return Task.CompletedTask;
-    };
 });
-
 
 
 builder.Services.AddCors(options =>
@@ -132,24 +107,6 @@ app.Use(async (context, next) =>
     }
     await next();
 });
-
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path.Equals("/login", StringComparison.OrdinalIgnoreCase)
-        && context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
-    {
-        var consent = context.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            await context.Response.WriteAsync("Cookie consent required to log in.");
-            return;
-        }
-    }
-
-    await next();
-});
-
 
 app.UseHttpsRedirection();
 app.UseRouting();

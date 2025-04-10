@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [setShowSearch]);
 
   useEffect(() => {
     const loadUser = async () => {

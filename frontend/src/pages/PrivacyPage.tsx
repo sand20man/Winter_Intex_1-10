@@ -1,56 +1,35 @@
-// import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchCurrentUser } from '../api/MovieAPI';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
 import PrivacyPolicy from '../components/PrivacyPolicy';
-// import { Movie } from '../types/Movie';
-// import { fetchGenre, fetchSearch } from '../api/MovieAPI';
 
 function PrivacyPage() {
-  // const [searchQuery, setSearchQuery] = useState<string>();
-  // const [_searchResults, setSearchResult] = useState<Movie[]>([]);
-  // const [_genre, setGenre] = useState<Movie[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  const [homePageBool, setHomePageBool] = useState<boolean>(true);
 
-  // useEffect(() => {
-  //   const searchMovies = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const data = await fetchSearch(searchQuery ?? null);
-  //       setSearchResult(data);
-  //     } catch (error) {
-  //       setError((error as Error).message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   searchMovies();
-  // }, [searchQuery]);
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        // Get user info from backend
+        console.log('Attempting to fetch current user');
+        const user = await fetchCurrentUser();
 
-  // useEffect(() => {
-  //   const loadMovies = async () => {
-  //     // if (!searchQuery.trim()) return; // Don't search if it's empty
-  //     try {
-  //       setLoading(true);
-  //       const data = await fetchGenre('thrillers');
-  //       setGenre(data);
-  //     } catch (error) {
-  //       setError((error as Error).message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   loadMovies();
-  // }, []);
+        if (user.userId !== 0) setHomePageBool(false);
+        else setHomePageBool(true);
+      } catch (error) {
+        console.error('Failed to load recommendations', error);
+        setHomePageBool(true);
+      }
+    };
 
-  // if (loading) return <p>Loading projects... </p>;
-  // if (error) return <p className="text-red-500">Error: {error}</p>;
+    loadUser();
+  }, []);
 
   return (
     <>
       <Navbar
         onSearchChange={() => {}}
-        homePageBool={true}
+        homePageBool={homePageBool}
         showSearch={false}
         setShowSearch={() => {}}
         searchInput=""
