@@ -56,35 +56,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.LoginPath = "/login";
-    
-    options.Events.OnValidatePrincipal = async context =>
-    {
-        var consent = context.HttpContext.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-            context.ShouldRenew = false;
-        }
-    };
-    
-    options.Events.OnRedirectToLogin = context =>
-    {
-        var consent = context.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        }
-    
-        context.Response.Redirect(context.RedirectUri);
-        return Task.CompletedTask;
-    };
-    
-    options.Events.OnRedirectToAccessDenied = context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-        return Task.CompletedTask;
-    };
 });
 
 builder.Services.AddAuthentication(options =>
