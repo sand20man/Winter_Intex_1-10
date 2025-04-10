@@ -13,6 +13,7 @@ import {
   fetchCurrentUser,
 } from '../api/MovieAPI';
 import '../components/MovieCard.css';
+import GenreFilter from '../components/GenreFilter';
 
 function MoviePage() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -22,6 +23,8 @@ function MoviePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+
 
   // Fetch recommendations
   // Fetch all genres once
@@ -170,6 +173,7 @@ function MoviePage() {
   return (
     <>
       <Navbar onSearchChange={setSearchQuery} homePageBool={false} />
+      <GenreFilter onGenreSelect={setSelectedGenre} />
 
       {recommendedMovies.length > 0 && (
         <>
@@ -211,19 +215,40 @@ function MoviePage() {
         </>
       ) : (
         <>
-          {genreList.map((genre) => (
-            <div key={genre}>
-              <h2 className="text-xl font-bold ml-4">{genre}</h2>
+          {selectedGenre ? (
+            <div key={selectedGenre}>
+              <h2 className="text-xl font-bold ml-4">{selectedGenre}</h2>
               <MovieCarousel
-                movies={(genreMovies[genre] || []).map((m) => ({
+                movies={(genreMovies[selectedGenre] || []).map((m) => ({
                   showId: m.showId,
                   title: m.title,
                   posterUrl: `/Movie Posters/${m.title}.jpg`,
                 }))}
               />
-              <br />
+              <div className="flex justify-end mr-4 mt-2">
+                <button
+                  className="bg-gray-200 hover:bg-gray-300 text-black px-4 py-2 rounded"
+                  onClick={() => setSelectedGenre(null)}
+                >
+                  Show All Genres
+                </button>
+              </div>
             </div>
-          ))}
+          ) : (
+            genreList.map((genre) => (
+              <div key={genre}>
+                <h2 className="text-xl font-bold ml-4">{genre}</h2>
+                <MovieCarousel
+                  movies={(genreMovies[genre] || []).map((m) => ({
+                    showId: m.showId,
+                    title: m.title,
+                    posterUrl: `/Movie Posters/${m.title}.jpg`,
+                  }))}
+                />
+                <br />
+              </div>
+            ))
+          )}
         </>
       )}
       <Footer />
