@@ -111,7 +111,7 @@ export const fetchSearch = async (search: string | null): Promise<Movie[]> => {
     const data: Movie[] = await response.json();
     return data as Movie[];
   } catch (error) {
-    console.error('Error fetching movies:', error);
+    console.error('Error fetching movies for search:', error);
     throw error;
   }
 };
@@ -131,7 +131,7 @@ export const fetchGenre = async (genre: string): Promise<Movie[]> => {
     const data: Movie[] = await response.json();
     return data as Movie[];
   } catch (error) {
-    console.error('Error fetching movies:', error);
+    console.error('Error fetching genre-based movies:', error);
     throw error;
   }
 };
@@ -148,7 +148,7 @@ export const fetchAllGenres = async (): Promise<string[]> => {
     const data: string[] = await response.json();
     return data as string[];
   } catch (error) {
-    console.error('Error fetching movies:', error);
+    console.error('Error fetching movies in all genres:', error);
     throw error;
   }
 };
@@ -165,7 +165,7 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
     const data: Movie = await response.json();
     return data as Movie;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching single movie:', error);
     throw error;
   }
 };
@@ -194,7 +194,7 @@ export const getRecommendations = async (showId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching movie recommendations:', error);
     throw error;
   }
 };
@@ -214,7 +214,7 @@ export const getUserRecommendations = async (userId: number) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching user movie recommendation:', error);
     throw error;
   }
 };
@@ -234,7 +234,7 @@ export const getContentRecommendations = async (showId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching movie content-based recommendations:', error);
     throw error;
   }
 };
@@ -276,7 +276,7 @@ export const fetchCurrentUser = async () => {
   }
 
   console.log(`UserId: ${userData.userId}`);
-  return userData.userId;
+  return userData;
 };
 
 export const submitUserRating = async (
