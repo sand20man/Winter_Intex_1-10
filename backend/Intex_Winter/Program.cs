@@ -34,8 +34,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
@@ -56,7 +54,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     
     // Default SignIn settings.
     options.SignIn.RequireConfirmedEmail = true;
-    // options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
     
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
@@ -70,31 +67,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
     options.LoginPath = "/login";
-    
-    // options.Events.OnValidatePrincipal = async context =>
-    // {
-    //     var consent = context.HttpContext.Request.Cookies["cookie_consent"];
-    //     if (consent != "true")
-    //     {
-    //         // Sign out the user if consent was withdrawn or not granted
-    //         await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-    //         context.ShouldRenew = false; // Optional: prevents cookie renewal
-    //     }
-    // };
-
-    // options.Events.OnRedirectToLogin = context =>
-    // {
-    //     var consent = context.Request.Cookies["cookie_consent"];
-    //     if (consent != "true")
-    //     {
-    //         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-    //         return Task.CompletedTask;
-    //     }
-
-    //     context.Response.Redirect(context.RedirectUri);
-    //     return Task.CompletedTask;
-    // };
 });
+
 
 builder.Services.AddCors(options =>
 {
@@ -112,6 +86,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 
 var app = builder.Build();

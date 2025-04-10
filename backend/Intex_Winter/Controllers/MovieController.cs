@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MovieController : ControllerBase
@@ -282,7 +282,7 @@ namespace Intex_Winter.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("Postrating")]
+        [HttpPost("rating")]
         public async Task<IActionResult> SubmitRating([FromBody] MoviesRating ratingData)
         {
             if (ratingData == null || string.IsNullOrWhiteSpace(ratingData.ShowId))
@@ -306,18 +306,5 @@ namespace Intex_Winter.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = "Rating saved successfully" });
         }
-        
-        [AllowAnonymous]
-        [HttpGet("getUserRating")]
-        public async Task<IActionResult> GetUserRating([FromQuery] long userId, [FromQuery] string showId)
-        {
-            var rating = await _context.MoviesRatings
-                .Where(r => r.UserId == userId && r.ShowId == showId)
-                .Select(r => r.Rating)
-                .FirstOrDefaultAsync();
-
-            return Ok(rating); // Will return 0 if not found
-        }
-
     }
 }

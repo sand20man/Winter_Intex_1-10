@@ -285,11 +285,11 @@ export const submitUserRating = async (
   rating: number
 ) => {
   const response = await fetch(`${api_URL}/Movie/rating`, {
-    method: 'POST',
+    method: 'POST', // or 'PUT' depending on your backend
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
+    credentials: 'include', // if you're using cookie auth
     body: JSON.stringify({ showId, userId, rating }),
   });
 
@@ -304,7 +304,6 @@ export const registerUser = async (email: string, password: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify({ email, password }),
   });
 
