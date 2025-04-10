@@ -240,20 +240,41 @@ export const getContentRecommendations = async (showId: string) => {
 };
 
 export const fetchCurrentUser = async () => {
-  try {
-    // const response = await fetch(`${api_URL}/Auth/me`, {
-    //   method: 'GET',
-    //   credentials: 'include',
-    // });
-    // if (!response.ok) {
-    //   throw new Error(`Failed to fetch current user: ${response.status}`);
-    // }
-    // const data = await response.json();
-    // return data;
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    throw error;
-  }
+  // 1. Get email from pingauth
+  const pingRes = await fetch(`${api_URL}/pingauth`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+  if (!pingRes.ok) throw new Error('Failed to get user email');
+
+  const pingData = await pingRes.json();
+  const email = pingData.email;
+
+  // 2. Use that to fetch userId from movie_users
+  const encodedEmail = encodeURIComponent(email);
+  const userRes = await fetch(`${api_URL}/get-user-id?email=${encodedEmail}`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!userRes.ok) throw new Error('Failed to get user ID');
+
+  const userData = await userRes.json();
+  return userData;
+  // try {
+  //   const response = await fetch(`${api_URL}/Auth/me`, {
+  //     method: 'GET',
+  //     credentials: 'include',
+  //   });
+  //   if (!response.ok) {
+  //     throw new Error(`Failed to fetch current user: ${response.status}`);
+  //   }
+  //   const data = await response.json();
+  //   return data;
+  // } catch (error) {
+  //   console.error('Error fetching user:', error);
+  //   throw error;
+  // }
 };
 
 export const submitUserRating = async (

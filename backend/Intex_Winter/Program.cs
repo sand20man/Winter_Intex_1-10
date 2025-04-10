@@ -232,7 +232,25 @@ app.MapGet("/get-role-by-email", async (
     {
         role = roleName ?? "none"
     });
-});//.RequireAuthorization();
+}).RequireAuthorization();
+
+app.MapGet("/get-user-id", async (
+    [FromQuery] string email,
+    MoviesDbContext db) =>
+{
+    var user = await db.MoviesUsers
+        .Where(mu => mu.Email == email)
+        .Select(mu => new { mu.UserId }) // or whatever your ID field is
+        .FirstOrDefaultAsync();
+
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    return Results.Ok(user);
+});
+
 
 app.MapGet("/test-alive", () => "I am alive!");
 
