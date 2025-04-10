@@ -298,7 +298,7 @@ export const submitUserRating = async (
   }
 };
 
-export async function registerUser(email: string, password: string) {
+export const registerUser = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: {
@@ -315,35 +315,4 @@ export async function registerUser(email: string, password: string) {
   }
 
   return data;
-}
-
-export const fetchUserRating = async (
-  showId: string,
-  userId: number
-): Promise<number> => {
-  try {
-    const response = await fetch(
-      `${api_URL}/Movie/getUserRating?showId=${showId}&userId=${userId}`,
-      {
-        credentials: 'include',
-      }
-    );
-    const text = await response.text();
-
-    if (!text) {
-      console.warn('No rating found — empty response');
-      return 0;
-    }
-
-    if (!response.ok) {
-      console.warn('Request failed or user not authorized');
-      return 0;
-    }
-
-    const data = JSON.parse(text);
-    return typeof data === 'number' ? data : 0;
-  } catch (err) {
-    console.error('Error fetching user rating:', err);
-    return 0;
-  }
 };
