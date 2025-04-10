@@ -12,6 +12,7 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
         const response = await axios.get(
           'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/api/roles',
           {
+            method: 'GET',
             withCredentials: true,
           }
         );

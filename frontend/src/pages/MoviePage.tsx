@@ -27,6 +27,38 @@ function MoviePage() {
   // Fetch all genres once
   useEffect(() => {
     const loadRecommendations = async () => {
+      let email = '';
+      console.log('Getting users credentials');
+      await fetch(
+        'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => (email = data.email))
+        .catch((err) => console.error('PingAuth Fetch failed:', err));
+
+      console.log('fetching user role through loops');
+      const encodedEmail = encodeURIComponent(email);
+      const response = await fetch(
+        `https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/get-role-by-email?email=${encodedEmail}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+      console.log('data retrieval...');
+      const data = await response.json();
+      console.log(`data: ${data}`);
+
+      if (data.role === 'admin') {
+        console.log('user is admin');
+      } else {
+        console.log('user is not admin');
+      }
+
       try {
         // Get user info from backend
         console.log('Attempting to fetch current user');
