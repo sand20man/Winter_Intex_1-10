@@ -30,7 +30,7 @@ function MoviePage() {
       let email = '';
       console.log('Getting users credentials');
       await fetch(
-        'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
+        'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/pingauth',
         {
           method: 'GET',
           credentials: 'include',
@@ -43,7 +43,7 @@ function MoviePage() {
       console.log('fetching user role through loops');
       const encodedEmail = encodeURIComponent(email);
       const response = await fetch(
-        `https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/get-role-by-email?email=${encodedEmail}`,
+        `https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/get-role-by-email?email=${encodedEmail}`,
         {
           method: 'GET',
           credentials: 'include',

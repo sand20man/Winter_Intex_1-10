@@ -52,8 +52,8 @@ function LoginPage() {
     }
 
     const loginUrl = rememberme
-      ? 'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/login?useCookies=true'
-      : 'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/login?useSessionCookies=true';
+      ? 'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/login?useCookies=true'
+      : 'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/login?useSessionCookies=true';
 
     try {
       const response = await fetch(loginUrl, {

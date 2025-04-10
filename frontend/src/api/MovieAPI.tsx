@@ -241,17 +241,15 @@ export const getContentRecommendations = async (showId: string) => {
 
 export const fetchCurrentUser = async () => {
   try {
-    const response = await fetch(`${api_URL}/Auth/me`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch current user: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    // const response = await fetch(`${api_URL}/Auth/me`, {
+    //   method: 'GET',
+    //   credentials: 'include',
+    // });
+    // if (!response.ok) {
+    //   throw new Error(`Failed to fetch current user: ${response.status}`);
+    // }
+    // const data = await response.json();
+    // return data;
   } catch (error) {
     console.error('Error fetching user:', error);
     throw error;
