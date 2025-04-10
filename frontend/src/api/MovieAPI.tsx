@@ -301,6 +301,7 @@ export const submitUserRating = async (
 export const registerUser = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },

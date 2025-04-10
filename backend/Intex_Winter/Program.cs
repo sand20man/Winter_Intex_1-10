@@ -51,11 +51,11 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequiredLength = 10;
     options.Password.RequiredUniqueChars = 4;
-    
+
     // Default SignIn settings.
     options.SignIn.RequireConfirmedEmail = true;
     options.SignIn.RequireConfirmedPhoneNumber = false;
-    
+
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
     options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 });
@@ -66,8 +66,23 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.HttpOnly = true;
-    options.LoginPath = "/login";
+
+    // 🔥 Stop redirecting unauthenticated API calls
+    options.Events.OnRedirectToLogin = context =>
+    {
+        if (context.Request.Path.StartsWithSegments("/api") ||
+            context.Request.Path.StartsWithSegments("/pingauth") ||
+            context.Request.Path.StartsWithSegments("/get-user-id"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
 });
+
 
 
 builder.Services.AddCors(options =>
@@ -203,7 +218,7 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
     var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
     var allClaims = user.Claims.Select(c => new { c.Type, c.Value });
-    
+
     return Results.Json(new
     {
         email = email,
