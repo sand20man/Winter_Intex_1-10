@@ -163,7 +163,10 @@ namespace Intex_Winter.Controllers
         }
 
         [HttpGet("genre_search")]
-        public async Task<IActionResult> SearchMoviesByGenres([FromQuery] string genres)
+        public async Task<IActionResult> SearchMoviesByGenres(
+            [FromQuery] string genres,
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 20)
         {
             if (string.IsNullOrEmpty(genres))
             {
@@ -171,18 +174,31 @@ namespace Intex_Winter.Controllers
             }
 
             var genreList = genres.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-
             var query = _context.MoviesTitles.AsQueryable();
 
             foreach (var genre in genreList)
             {
-                query = query.Where(m => m.Genre.Contains(genre)).Take(20);
+                query = query.Where(m => m.Genre.Contains(genre));
             }
 
-            var results = await query.ToListAsync();
+            var totalCount = await query.CountAsync();
 
-            return Ok(results);
+            var pagedResults = await query
+                .OrderBy(m => m.Title)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            var result = new
+            {
+                Movies = pagedResults,
+                TotalCount = totalCount
+            };
+
+            return Ok(result);
         }
+
+        
         [AllowAnonymous]
         [HttpGet("get_genres")]
         public async Task<IActionResult> GetGenres()
