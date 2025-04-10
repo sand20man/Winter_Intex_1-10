@@ -33,7 +33,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
-    .AddApiEndpoints(); // 
+    .AddApiEndpoints();
+
 
 
 builder.Services.AddAuthentication(options =>
