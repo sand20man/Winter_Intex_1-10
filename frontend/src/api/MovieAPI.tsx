@@ -1,7 +1,7 @@
 import { Movie } from '../types/Movie';
 
 const api_URL =
-  'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/api';
+  'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/api';
 
 export interface FetchMoviesResponse {
   movies: Movie[];
