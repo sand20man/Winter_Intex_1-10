@@ -48,7 +48,14 @@ function PrivacyPage() {
 
   return (
     <>
-      <Navbar onSearchChange={(q) => setSearchQuery(q ?? '')} />
+      <Navbar
+        onSearchChange={() => {}}
+        homePageBool={true}
+        showSearch={false}
+        setShowSearch={() => {}}
+        searchInput=""
+        setSearchInput={() => {}}
+      />
       <PrivacyPolicy />
       <Footer />
     </>

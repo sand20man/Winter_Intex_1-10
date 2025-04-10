@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   fetchCurrentUser,
@@ -105,7 +105,13 @@ const Details: React.FC = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar
+        onSearchChange={() => {}}
+        showSearch={false}
+        setShowSearch={() => {}}
+        searchInput=""
+        setSearchInput={() => {}}
+      />
       <div className="container details-container">
         {/* Movie Details & Poster */}
         <div className="row h-100">
