@@ -2,6 +2,7 @@ import { API_URL } from '../config';
 import { Movie } from '../types/Movie';
 
 const api_URL = `${API_URL}/api`;
+const localhost = 'https://localhost:5000/api'
 
 export interface FetchMoviesResponse {
   movies: Movie[];

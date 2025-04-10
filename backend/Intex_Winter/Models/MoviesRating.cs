@@ -6,13 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Models;
 
-[Keyless]
+[PrimaryKey(nameof(UserId), nameof(ShowId))]
 [Table("movies_ratings")]
 public partial class MoviesRating
 {
+    
     [Column("user_id")]
     public int? UserId { get; set; }
-
+    
     [Column("show_id")]
     public string? ShowId { get; set; }
 
