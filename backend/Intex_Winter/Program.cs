@@ -63,16 +63,16 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;              // ✅ Needed for cross-origin
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // ⚠️ Allows HTTP in dev
     options.Cookie.HttpOnly = true;
 
-    // 🔥 Stop redirecting unauthenticated API calls
     options.Events.OnRedirectToLogin = context =>
     {
-        if (context.Request.Path.StartsWithSegments("/api") ||
-            context.Request.Path.StartsWithSegments("/pingauth") ||
-            context.Request.Path.StartsWithSegments("/get-user-id"))
+        var path = context.Request.Path;
+        if (path.StartsWithSegments("/login") ||
+            path.StartsWithSegments("/pingauth") ||
+            path.StartsWithSegments("/get-user-id"))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return Task.CompletedTask;
@@ -83,29 +83,22 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // 🔁 Match exactly — no trailing slash
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // 🔥 Required for cookies
+    });
 });
+
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-});
-
 
 var app = builder.Build();
 
