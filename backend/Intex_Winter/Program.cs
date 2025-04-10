@@ -121,23 +121,6 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path.Equals("/login", StringComparison.OrdinalIgnoreCase)
-        && context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
-    {
-        var consent = context.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            await context.Response.WriteAsync("Cookie consent required to log in.");
-            return;
-        }
-    }
-
-    await next();
-});
-
 
 app.UseHttpsRedirection();
 app.UseRouting();
