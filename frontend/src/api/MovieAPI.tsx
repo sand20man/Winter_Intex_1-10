@@ -116,10 +116,13 @@ export const fetchSearch = async (search: string | null): Promise<Movie[]> => {
   }
 };
 
-export const fetchGenre = async (genre: string): Promise<Movie[]> => {
+export const fetchGenre = async (
+  genre: string,
+  skip: number = 0
+): Promise<Movie[]> => {
   try {
     const response = await fetch(
-      `${api_URL}/Movie/genre_search?genres=${genre}`,
+      `${api_URL}/Movie/genre_search?genres=${genre}&skip=${skip}&take=20`,
       {
         credentials: 'include',
       }
@@ -128,10 +131,15 @@ export const fetchGenre = async (genre: string): Promise<Movie[]> => {
     if (!response.ok) {
       throw new Error('Failed to fetch movies');
     }
+
     const data: Movie[] = await response.json();
-    return data as Movie[];
+    return data; // Accessing the 'Movies' array inside the result object
   } catch (error) {
+<<<<<<< HEAD
+    console.error('Error fetching genre movies:', error);
+=======
     console.error('Error fetching genre-based movies:', error);
+>>>>>>> origin/main
     throw error;
   }
 };

@@ -7,7 +7,9 @@
 
 .movie-poster {
   width: 100%;
+  height: 240px; /* or whatever height you want for uniformity */
   border-radius: 8px;
+  object-fit: cover; /* THIS ensures all posters fill the area without distortion */
 }
 
 .movie-title {

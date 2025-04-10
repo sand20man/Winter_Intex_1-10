@@ -7,6 +7,7 @@ import LogoutButton from './LogoutButton';
 
 interface NavbarProps {
   onSearchChange?: (query: string | null) => void;
+  onHomeClick?: () => void;
   homePageBool?: boolean;
   showSearch: boolean;
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,6 +17,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({
   onSearchChange = () => {},
+  onHomeClick = () => {}, // ← Add this default so it's defined
   homePageBool = false,
   showSearch,
   setShowSearch,
@@ -64,9 +66,10 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="navbar-left">
           <div
             className="navbar-logo"
-            onClick={
-              homePageBool ? () => navigate('/') : () => navigate('/movie')
-            }
+            onClick={() => {
+              onHomeClick?.(); // ← reset search, genre, etc.
+              navigate('/movie'); // ← go to movie page
+            }}
           >
             <img
               src="/logos/horizontal_logo_no_background.png"
@@ -77,7 +80,15 @@ const Navbar: React.FC<NavbarProps> = ({
 
           {!homePageBool && (
             <div className="navbar-links">
-              <span onClick={() => navigate('/movie')}>Home</span>
+              <span
+                onClick={() => {
+                  onHomeClick?.(); // ← Clears search state
+                  navigate('/movie'); // ← Navigates to movie page
+                }}
+              >
+                Home
+              </span>
+
               <span onClick={() => navigate('/admin')}>Admin</span>
               <span onClick={() => navigate('/profile')}>Watchlist</span>
               <span onClick={() => navigate('/privacy')}>Privacy</span>
