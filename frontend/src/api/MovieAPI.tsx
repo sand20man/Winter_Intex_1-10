@@ -299,14 +299,16 @@ export const submitUserRating = async (
 };
 
 export const registerUser = async (email: string, password: string) => {
-export const registerUser = async (email: string, password: string) => {
-  const response = await fetch(`${API_URL}/register`, {
+  const response = await fetch('/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   });
 
   if (!response.ok) {
-    throw new Error('Registration failed'); // Or customize this message
+    throw new Error(`Registration failed with status ${response.status}`);
   }
+
+  // No parsing, no return needed
 };
+
