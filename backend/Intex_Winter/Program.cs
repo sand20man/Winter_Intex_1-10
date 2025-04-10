@@ -44,6 +44,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
+    // Password improvements
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 10;
+    options.Password.RequiredUniqueChars = 4;
+    
+    // Default SignIn settings.
+    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+    
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
     options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 });
