@@ -1,7 +1,7 @@
 import { Movie } from '../types/Movie';
 
 const api_URL =
-  'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/api';
+  'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/api';
 
 export interface FetchMoviesResponse {
   movies: Movie[];
@@ -241,17 +241,15 @@ export const getContentRecommendations = async (showId: string) => {
 
 export const fetchCurrentUser = async () => {
   try {
-    const response = await fetch(`${api_URL}/Auth/me`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch current user: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    // const response = await fetch(`${api_URL}/Auth/me`, {
+    //   method: 'GET',
+    //   credentials: 'include',
+    // });
+    // if (!response.ok) {
+    //   throw new Error(`Failed to fetch current user: ${response.status}`);
+    // }
+    // const data = await response.json();
+    // return data;
   } catch (error) {
     console.error('Error fetching user:', error);
     throw error;

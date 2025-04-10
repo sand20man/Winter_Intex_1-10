@@ -13,7 +13,7 @@ export default function ProtectedRoute({
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
+          'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/pingauth',
           {
             method: 'GET',
             credentials: 'include',

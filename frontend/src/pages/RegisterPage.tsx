@@ -31,13 +31,16 @@ function Register() {
       setError('Passwords do not match.');
     } else {
       setError('');
-      fetch('https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
+      fetch(
+        'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/register',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      )
         .then((data) => {
           console.log(data);
           if (data.ok) {

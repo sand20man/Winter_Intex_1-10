@@ -45,7 +45,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
     }
 
     fetchWithRetry(
-      'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
+      'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/pingauth',
       {
         method: 'GET',
         credentials: 'include',

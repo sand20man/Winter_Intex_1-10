@@ -7,7 +7,7 @@ function Logout(props: { children: React.ReactNode }) {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/logout', {
+      const response = await fetch('https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/logout', {
         method: 'POST',
         credentials: 'include', // Ensure cookies are sent
         headers: {

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import './NavBar.css';
 import SearchBar from './SearchBar';
 import { useEffect, useState } from 'react';
-import { fetchCurrentUser } from '../api/MovieAPI';
+// import { fetchCurrentUser } from '../api/MovieAPI';
 import LogoutButton from './LogoutButton';
 
 interface NavbarProps {
@@ -21,9 +21,9 @@ const Navbar: React.FC<NavbarProps> = ({
     const loadUser = async () => {
       try {
         // Get user info from backend
-        const user = await fetchCurrentUser();
-
-        setName(user.name.split(' ')[0]);
+        // const user = await fetchCurrentUser();
+        setName('Unknown');
+        // setName(user.name.split(' ')[0]);
       } catch (error) {
         console.error('Failed to load recommendations', error);
       }
