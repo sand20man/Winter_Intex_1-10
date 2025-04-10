@@ -298,7 +298,7 @@ export const submitUserRating = async (
   }
 };
 
-export const registerUser = async (email: string, password: string) => {
+export async function registerUser(email: string, password: string) {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: {
@@ -315,7 +315,7 @@ export const registerUser = async (email: string, password: string) => {
   }
 
   return data;
-};
+}
 
 export const fetchUserRating = async (
   showId: string,
