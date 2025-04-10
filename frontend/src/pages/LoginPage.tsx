@@ -57,8 +57,6 @@ function LoginPage() {
       : `${API_URL}/login?useSessionCookies=true`;
 
     try {
-      console.log(`Email: ${email}`);
-      console.log(`Password: ${password}`);
       const response = await fetch(loginUrl, {
         method: 'POST',
         credentials: 'include',

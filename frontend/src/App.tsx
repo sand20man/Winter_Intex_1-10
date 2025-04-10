@@ -81,7 +81,6 @@ function App() {
         >
           Learn more
         </a>
-        
       </CookieConsent>
     </>
   );

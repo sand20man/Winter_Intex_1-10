@@ -17,9 +17,6 @@ export default function ProtectedRoute({
           method: 'GET',
           credentials: 'include',
         });
-        console.log(
-          `Response in checkAuth: ${response.headers.get('content-type')}`
-        );
 
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
