@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   fetchCurrentUser,
   fetchSingle,
-  fetchUserRating,
+  // fetchUserRating,
   getContentRecommendations,
   getPosterUrl,
   getRecommendations,
@@ -35,7 +35,6 @@ const Details: React.FC = () => {
   );
   const [userRating, setUserRating] = useState<number>(0);
   const [userId, setUserId] = useState<number | null>(null);
-
 
   const handleRating = async (newRating: number) => {
     setUserRating(newRating); // optimistic UI update
@@ -105,10 +104,11 @@ const Details: React.FC = () => {
       }
       try {
         const user = await fetchCurrentUser();
-        setUserId(user.userId)
-        const rating = await fetchUserRating(showId!, user.userId);
+        setUserId(user.userId);
+        // const rating = await fetchUserRating(showId!, user.userId);
         // const rating = await fetchUserRating('s4634', 2);
-        setUserRating(rating);
+        // setUserRating(rating);
+        setUserRating(2);
       } catch (error) {
         console.error('Failed to fetch user rating:', error);
       }
