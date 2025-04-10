@@ -170,10 +170,6 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
   }
 };
 
-// export const getPosterUrl = (title: string) => {
-//   return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(title)}.jpg`;
-// };
-
 export const getPosterUrl = (title: string) => {
   const sanitizedTitle = title
     .replace(/[^a-z0-9 ]/gi, '') // Allow only letters, numbers, and spaces
@@ -193,7 +189,7 @@ export const getRecommendations = async (showId: string) => {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch recommendations');
+      throw new Error('Failed to fetch new recommendations');
     }
     const data = await response.json();
     return data;
@@ -226,7 +222,7 @@ export const getUserRecommendations = async (userId: number) => {
 export const getContentRecommendations = async (showId: string) => {
   try {
     const response = await fetch(
-      `https://localhost:5000/api/Movie/ContentRecommender?showId=${showId}`,
+      `${api_URL}/Movie/ContentRecommender?showId=${showId}`,
       {
         credentials: 'include',
       }
@@ -267,7 +263,7 @@ export const submitUserRating = async (
   userId: number,
   rating: number
 ) => {
-  const response = await fetch(`${api_URL}/Auth/rating`, {
+  const response = await fetch(`${api_URL}/Movie/rating`, {
     method: 'POST', // or 'PUT' depending on your backend
     headers: {
       'Content-Type': 'application/json',
