@@ -240,43 +240,54 @@ export const getContentRecommendations = async (showId: string) => {
 };
 
 export const fetchCurrentUser = async () => {
-  let email = '';
-  // 1. Get email from pingauth
-  await fetch(`${API_URL}/pingauth`, {
-    method: 'GET',
-    credentials: 'include',
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      email = data.email;
-      console.log(`Email: ${data.email}`);
-    })
-    .catch((err) => console.error('PingAuth Fetch failed:', err));
+  try {
+    const pingRes = await fetch(`${API_URL}/pingauth`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-  console.log(`email to lookup for id: ${email}`);
+    const contentType = pingRes.headers.get('content-type');
+    if (!pingRes.ok || !contentType?.includes('application/json')) {
+      const errorText = await pingRes.text();
+      console.error('PingAuth Fetch failed (non-JSON):', errorText);
+      return {
+        name: 'Unknown',
+        userId: 0,
+      };
+    }
 
-  // 2. Use that to fetch userId from movie_users
-  const encodedEmail = encodeURIComponent(email);
-  const userRes = await fetch(`${API_URL}/get-user-id?email=${encodedEmail}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+    const pingData = await pingRes.json();
+    const email = pingData.email;
+    console.log(`Email: ${email}`);
 
-  const userData = await userRes.json();
-  console.log(`UserData for Navbar: ${JSON.stringify(userData)}`);
-  console.log(`Typeof userData: ${typeof userData}`);
-  console.log(`${typeof userData === 'string'}`);
+    // Step 2 - Fetch user ID
+    const encodedEmail = encodeURIComponent(email);
+    const userRes = await fetch(
+      `${API_URL}/get-user-id?email=${encodedEmail}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    );
 
-  if (typeof userData === 'string') {
-    // It's an error message like "User not found"
-    return {
-      name: 'Unknown',
-      userId: 0,
-    };
+    if (!userRes.ok) {
+      const errorMsg = await userRes.text();
+      console.error('get-user-id failed:', errorMsg);
+      return { name: 'Unknown', userId: 0 };
+    }
+
+    const userData = await userRes.json();
+    console.log(`UserData:`, userData);
+
+    if (typeof userData === 'string') {
+      return { name: 'Unknown', userId: 0 };
+    }
+
+    return userData;
+  } catch (err) {
+    console.error('Error in fetchCurrentUser:', err);
+    return { name: 'Unknown', userId: 0 };
   }
-
-  console.log(`UserId: ${userData.userId}`);
-  return userData;
 };
 
 export const submitUserRating = async (
