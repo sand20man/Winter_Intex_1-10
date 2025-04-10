@@ -34,7 +34,13 @@
 .poster-container {
   flex: 1;
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.star-rating-wrapper {
+  margin-bottom: 1rem;
 }
 
 .movie-poster {
