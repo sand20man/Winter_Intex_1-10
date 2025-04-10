@@ -263,7 +263,7 @@ export const fetchCurrentUser = async () => {
   });
 
   const userData = await userRes.json();
-  console.log(`UserData: ${JSON.stringify(userData)}`);
+  console.log(`UserData for Navbar: ${JSON.stringify(userData)}`);
   console.log(`Typeof userData: ${typeof userData}`);
   console.log(`${typeof userData === 'string'}`);
 
