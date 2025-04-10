@@ -132,7 +132,8 @@ else
         await next();
     });
 }
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
 
