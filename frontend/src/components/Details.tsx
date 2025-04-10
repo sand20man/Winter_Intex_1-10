@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  // fetchCurrentUser,
+  fetchCurrentUser,
   fetchSingle,
   getContentRecommendations,
   getPosterUrl,
@@ -39,8 +39,8 @@ const Details: React.FC = () => {
 
     try {
       // Get user info from backend
-      //const user = await fetchCurrentUser();
-      const userId = 1; //user.userId;
+      const user = await fetchCurrentUser();
+      const userId = user.userId;
       await submitUserRating(showId!, userId, newRating);
     } catch (err) {
       console.error('Failed to submit rating:', err);

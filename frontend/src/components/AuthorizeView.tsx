@@ -17,7 +17,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
   const [user, setUser] = useState(emptyuser);
 
   useEffect(() => {
-    async function fetchWithRetry(url: string, options: any) {
+    async function fetchWithRetry(url: string, options: RequestInit) {
       try {
         const response = await fetch(url, options);
         //console.log('AuthorizeView: Raw Response:', response);

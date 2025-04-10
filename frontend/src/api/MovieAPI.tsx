@@ -240,41 +240,43 @@ export const getContentRecommendations = async (showId: string) => {
 };
 
 export const fetchCurrentUser = async () => {
+  let email = '';
   // 1. Get email from pingauth
-  const pingRes = await fetch(`${api_URL}/pingauth`, {
+  await fetch(`${API_URL}/pingauth`, {
     method: 'GET',
     credentials: 'include',
-  });
-  if (!pingRes.ok) throw new Error('Failed to get user email');
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      email = data.email;
+      console.log(`Email: ${data.email}`);
+    })
+    .catch((err) => console.error('PingAuth Fetch failed:', err));
 
-  const pingData = await pingRes.json();
-  const email = pingData.email;
+  console.log(`email to lookup for id: ${email}`);
 
   // 2. Use that to fetch userId from movie_users
   const encodedEmail = encodeURIComponent(email);
-  const userRes = await fetch(`${api_URL}/get-user-id?email=${encodedEmail}`, {
+  const userRes = await fetch(`${API_URL}/get-user-id?email=${encodedEmail}`, {
     method: 'GET',
     credentials: 'include',
   });
 
-  if (!userRes.ok) throw new Error('Failed to get user ID');
-
   const userData = await userRes.json();
-  return userData;
-  // try {
-  //   const response = await fetch(`${api_URL}/Auth/me`, {
-  //     method: 'GET',
-  //     credentials: 'include',
-  //   });
-  //   if (!response.ok) {
-  //     throw new Error(`Failed to fetch current user: ${response.status}`);
-  //   }
-  //   const data = await response.json();
-  //   return data;
-  // } catch (error) {
-  //   console.error('Error fetching user:', error);
-  //   throw error;
-  // }
+  console.log(`UserData: ${JSON.stringify(userData)}`);
+  console.log(`Typeof userData: ${typeof userData}`);
+  console.log(`${typeof userData === 'string'}`);
+
+  if (typeof userData === 'string') {
+    // It's an error message like "User not found"
+    return {
+      name: 'Unknown',
+      userId: 0,
+    };
+  }
+
+  console.log(`UserId: ${userData.userId}`);
+  return userData.userId;
 };
 
 export const submitUserRating = async (

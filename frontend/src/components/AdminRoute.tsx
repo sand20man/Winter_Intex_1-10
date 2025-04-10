@@ -1,6 +1,5 @@
 import { JSX, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { API_URL } from '../config';
 
 export default function AdminRoute({ children }: { children: JSX.Element }) {
@@ -10,17 +9,39 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
   useEffect(() => {
     const checkRole = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/roles`, {
+        let email = '';
+        console.log('Getting users credentials');
+        await fetch(`${API_URL}/pingauth`, {
           method: 'GET',
-          withCredentials: true,
-        });
+          credentials: 'include',
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            email = data.email;
+            console.log(`Email: ${data.email}`);
+          })
+          .catch((err) => console.error('PingAuth Fetch failed:', err));
 
-        console.log('Roles response:', response.data);
-
-        // ✅ assumes response is a raw array like ["admin"]
-        setIsAdmin(
-          Array.isArray(response.data) && response.data.includes('admin')
+        console.log('fetching user role through loops');
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${API_URL}/get-role-by-email?email=${encodedEmail}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
         );
+        console.log('data retrieval...');
+        const data = await response.json();
+        console.log(`data: ${data}`);
+
+        if (data.role === 'admin') {
+          console.log('user is admin');
+          setIsAdmin(true);
+        } else {
+          console.log('user is not admin');
+          setIsAdmin(false);
+        }
       } catch (error) {
         console.error('Error checking roles:', error);
         setIsAdmin(false);

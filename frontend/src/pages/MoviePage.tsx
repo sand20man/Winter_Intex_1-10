@@ -10,7 +10,7 @@ import {
   getPosterUrl,
   getUserRecommendations,
   fetchSingle,
-  // fetchCurrentUser,
+  fetchCurrentUser,
 } from '../api/MovieAPI';
 import '../components/MovieCard.css';
 import { API_URL } from '../config';
@@ -37,7 +37,10 @@ function MoviePage() {
         credentials: 'include',
       })
         .then((res) => res.json())
-        .then((data) => (email = data.email))
+        .then((data) => {
+          email = data.email;
+          console.log(`Email: ${data.email}`);
+        })
         .catch((err) => console.error('PingAuth Fetch failed:', err));
 
       console.log('fetching user role through loops');
@@ -62,10 +65,10 @@ function MoviePage() {
       try {
         // Get user info from backend
         console.log('Attempting to fetch current user');
-        // const user = await fetchCurrentUser();
+        const user = await fetchCurrentUser();
         console.log('User fetched');
-        const userId = 1; //user.userId;
-        console.log(userId);
+        const userId = user.userId;
+        console.log(`UserId after fetch: ${userId}`);
 
         const recData = await getUserRecommendations(userId);
         const recIds = [
