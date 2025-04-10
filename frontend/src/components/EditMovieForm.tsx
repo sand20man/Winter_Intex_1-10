@@ -86,17 +86,17 @@ const EditMovieForm = ({ movie, onSuccess, onCancel }: EditMovieFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     const selectedGenres = genreOptions
       .filter(({ field }) => formData[field as keyof Movie] === 1)
-      .map(({ label }) => label);
-
-    const movieToSubmit = {
+      .map(({ label }) => label)
+      .join(', ');
+  
+    await updateMovie(formData.showId, {
       ...formData,
-      genre: selectedGenres.join(', '),
-    };
-
-    await updateMovie(formData.showId, formData);
+      genre: selectedGenres,
+    });
+  
     onSuccess();
   };
 

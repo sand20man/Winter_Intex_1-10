@@ -1,19 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 type Props = {
   onSearchSubmit: (query: string) => void;
+  value: string;
+  setValue: (val: string) => void;
 };
 
-const SearchBar: React.FC<Props> = ({ onSearchSubmit }) => {
-  const [searchInput, setSearchInput] = useState('');
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-  };
-
+const SearchBar: React.FC<Props> = ({ onSearchSubmit, value, setValue }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearchSubmit(searchInput); // Only here do we pass it to MoviePage
+    onSearchSubmit(value); // Send search value
   };
 
   return (
@@ -23,15 +19,9 @@ const SearchBar: React.FC<Props> = ({ onSearchSubmit }) => {
         type="text"
         placeholder="Search..."
         className="navbar-search me-2"
-        value={searchInput}
-        onChange={handleSearchChange}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
-      <button
-        className="bg-gray-200 hover:bg-gray-300 text-black px-4 py-2 rounded"
-        type="submit"
-      >
-        Enter
-      </button>
     </form>
   );
 };

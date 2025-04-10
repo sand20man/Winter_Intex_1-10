@@ -7,8 +7,8 @@ import { fetchGenre, fetchSearch } from '../api/MovieAPI';
 
 function PrivacyPage() {
   const [searchQuery, setSearchQuery] = useState<string>();
-  const [searchResults, setSearchResult] = useState<Movie[]>([]);
-  const [genre, setGenre] = useState<Movie[]>([]);
+  const [_searchResults, setSearchResult] = useState<Movie[]>([]);
+  const [_genre, setGenre] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +16,7 @@ function PrivacyPage() {
     const searchMovies = async () => {
       try {
         setLoading(true);
-        const data = await fetchSearch(searchQuery);
+        const data = await fetchSearch(searchQuery ?? null);
         setSearchResult(data);
       } catch (error) {
         setError((error as Error).message);
@@ -48,7 +48,7 @@ function PrivacyPage() {
 
   return (
     <>
-      <Navbar onSearchChange={setSearchQuery} />
+      <Navbar onSearchChange={(q) => setSearchQuery(q ?? '')} />
       <PrivacyPolicy />
       <Footer />
     </>

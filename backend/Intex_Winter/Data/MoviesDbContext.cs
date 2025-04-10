@@ -23,4 +23,6 @@ public partial class MoviesDbContext : DbContext
     
     public DbSet<RatingRecommender> RatingRecommenders { get; set; }
     public DbSet<UserRatingRecommender> UserRatingRecommenders { get; set; }
+    
+    public DbSet<ContentFilterRecommender> ContentRecommendations { get; set; }
 }

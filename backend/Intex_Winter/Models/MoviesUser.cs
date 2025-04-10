@@ -32,20 +32,22 @@ public partial class MoviesUser
 
     public int? Netflix { get; set; }
 
-    [Column("Amazon Prime")]
+    [Column("amazon_prime")]
     public int? AmazonPrime { get; set; }
 
-    [Column("Disney+")]
+    [Column("disney_")]
     public int? Disney { get; set; }
 
-    [Column("Paramount+")]
+    [Column("paramount_")]
     public int? Paramount { get; set; }
 
+    [Column("max")]
     public int? Max { get; set; }
 
+    [Column("hulu")]
     public int? Hulu { get; set; }
 
-    [Column("Apple TV+")]
+    [Column("apple_tv_")]
     public int? AppleTv { get; set; }
 
     public int? Peacock { get; set; }

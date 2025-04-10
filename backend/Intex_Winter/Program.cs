@@ -2,9 +2,11 @@ using System.Security.Claims;
 using Intex_Winter.Data;
 using Intex_Winter.Models;
 using Intex_Winter.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,19 +16,13 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SupportNonNullableReferenceTypes();
 });
 
-builder.Services.AddEndpointsApiExplorer(); // already present is fine
-
-// MoviesDbContext → Azure SQL (use secret manager/env var)
 builder.Services.AddDbContext<MoviesDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MovieConnection")));
 
@@ -41,60 +37,93 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
     options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
 });
 
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
-    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email; // Ensure email is stored in claims
+    options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 });
-
-builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.LoginPath = "/login";
+    options.Cookie.SameSite = SameSiteMode.None; // Required for cross-origin
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.LoginPath = "/login";
 });
+
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // Replace with your frontend URL
-                .AllowCredentials() // Required to allow cookies
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+            policy.WithOrigins("http://localhost:3000/", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+
         });
 });
 
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 
 var app = builder.Build();
 
-app.MapControllers();
-app.MapIdentityApi<IdentityUser>();
+// app.Use(async (context, next) =>
+// {
+//     // TEMP CORS override for debugging
+//     context.Response.OnStarting(() =>
+//     {
+//         context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
+//         context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+//         return Task.CompletedTask;
+//     });
 
-// Configure the HTTP request pipeline.
+//     await next();
+// });
+
+
+// Middleware to allow OPTIONS requests before auth and routing
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == HttpMethods.Options)
+    {
+        context.Response.StatusCode = 204;
+        return;
+    }
+    await next();
+});
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-if (!app.Environment.IsDevelopment())
+else
 {
     app.Use(async (context, next) =>
     {
-        context.Response.Headers.Append("Content-Security-Policy", 
+        context.Response.Headers.Append("Content-Security-Policy",
             "default-src 'self'; " +
             "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://js.stripe.com https://*.firebaseio.com 'unsafe-inline'; " +
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
@@ -117,25 +146,55 @@ if (!app.Environment.IsDevelopment())
     });
 }
 
+app.MapControllers();
+app.MapIdentityApi<IdentityUser>();
 
+app.MapPost("/auth/login", async (
+    HttpContext context,
+    SignInManager<IdentityUser> signInManager,
+    UserManager<IdentityUser> userManager,
+    [FromBody] LoginDto login
+) =>
+{
+    try
+    {
+        var user = await userManager.FindByEmailAsync(login.Email);
+        if (user == null)
+        {
+            return Results.Json(
+                new { message = "Invalid credentials" },
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
 
+        var result = await signInManager.PasswordSignInAsync(
+            user, login.Password, isPersistent: true, lockoutOnFailure: false);
 
-app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
+        if (!result.Succeeded)
+        {
+            return Results.Json(
+                new { message = "Invalid login attempt" },
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
+
+        return Results.Ok(new { message = "Login successful" });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("🔥 Login exception: " + ex);
+        return Results.Problem("Server error occurred. See logs.");
+    }
+});
+
 
 
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
-
-    // Ensure authentication cookie is removed
     context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
-
     return Results.Ok(new { message = "Logout successful" });
 }).RequireAuthorization();
-
 
 app.MapGet("/pingauth", (ClaimsPrincipal user) =>
 {
@@ -148,11 +207,53 @@ app.MapGet("/pingauth", (ClaimsPrincipal user) =>
     return Results.Json(new { email = email }); // Return as JSON
 }).RequireAuthorization();
 
+// Create a service scope so you can use DI services like UserManager/RoleManager
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    // Get the role manager and user manager
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+    // Define the roles you want to ensure exist
+    string[] roles = { "admin", "user" };
+
+    // Create roles if they don’t already exist
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    // Check if your admin user exists and is assigned to the "admin" role
+    var adminEmail = "admin@admin.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "admin"))
+    {
+        await userManager.AddToRoleAsync(adminUser, "admin");
+    }
+}
+
+app.MapGet("/api/roles", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
+{
+    var currentUser = await userManager.GetUserAsync(user);
+    if (currentUser == null) return Results.Unauthorized();
+
+    var roles = await userManager.GetRolesAsync(currentUser);
+    return Results.Json(new { roles }); // instead of just Results.Ok(roles)
+
+}).RequireAuthorization();
+
+
 app.Run();
 return;
 
 void ConfigureServices(IServiceCollection services)
 {
     services.AddSingleton<BlobService>();
-    services.AddControllersWithViews(); // or AddRazorPages();
+    services.AddControllersWithViews();
 }

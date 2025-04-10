@@ -1,14 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import './Footer.css';
 
-const Footer = () => {
+type FooterProps = {
+  homePageBool?: boolean;
+};
+
+const Footer = ({ homePageBool = false }: FooterProps) => {
   const navigate = useNavigate();
 
   return (
     <footer className="footer">
-      <div className="footer-left" onClick={() => navigate('/movie')}>
+      <div
+        className="footer-left"
+        onClick={homePageBool ? () => navigate('/') : () => navigate('/movie')}
+      >
         <img
-          src="logos/horizontal logo.png"
+          src="logos/horizontal_logo_no_background.png"
           alt="CineNiche Logo"
           className="footer-logo"
           height={50}
