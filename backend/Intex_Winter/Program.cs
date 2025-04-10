@@ -189,10 +189,13 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
     var roles = await userManager.GetRolesAsync(currentUser);
     var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
+    var allClaims = user.Claims.Select(c => new { c.Type, c.Value });
+    
     return Results.Json(new
     {
         email = email,
-        roles = roles
+        roles = roles,
+        claims = allClaims
     });
 }).RequireAuthorization();
 
