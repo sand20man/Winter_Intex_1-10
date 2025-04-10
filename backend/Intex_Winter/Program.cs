@@ -51,11 +51,11 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequiredLength = 10;
     options.Password.RequiredUniqueChars = 4;
-    
+
     // Default SignIn settings.
     options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
-    
+
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
     options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 });
@@ -63,10 +63,24 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;              // ✅ Needed for cross-origin
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // ⚠️ Allows HTTP in dev
     options.Cookie.HttpOnly = true;
-    options.LoginPath = "/login";
+
+    options.Events.OnRedirectToLogin = context =>
+    {
+        var path = context.Request.Path;
+        if (path.StartsWithSegments("/login") ||
+            path.StartsWithSegments("/pingauth") ||
+            path.StartsWithSegments("/get-user-id"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
 });
 
 
@@ -75,38 +89,33 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000/", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .SetIsOriginAllowedToAllowWildcardSubdomains();
 
         });
 });
+
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-});
-
-
 var app = builder.Build();
 
 
 // Middleware to allow OPTIONS requests before auth and routing
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == HttpMethods.Options)
-    {
-        context.Response.StatusCode = 204;
-        return;
-    }
-    await next();
-});
+// app.Use(async (context, next) =>
+// {
+//     if (context.Request.Method == HttpMethods.Options)
+//     {
+//         context.Response.StatusCode = 204;
+//         return;
+//     }
+//     await next();
+// });
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -203,7 +212,7 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
     var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
     var allClaims = user.Claims.Select(c => new { c.Type, c.Value });
-    
+
     return Results.Json(new
     {
         email = email,
@@ -267,4 +276,7 @@ app.MapGet("/get-user-id", async (
 
 app.MapGet("/test-alive", () => "I am alive!");
 
+app.MapGet("/cors-test", () => Results.Ok("GET worked"))
+   .RequireCors("AllowFrontend");
+   
 app.Run();
