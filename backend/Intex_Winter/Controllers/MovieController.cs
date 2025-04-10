@@ -183,7 +183,7 @@ namespace Intex_Winter.Controllers
 
             return Ok(results);
         }
-
+        [AllowAnonymous]
         [HttpGet("get_genres")]
         public async Task<IActionResult> GetGenres()
         {
@@ -196,12 +196,6 @@ namespace Intex_Winter.Controllers
                 .Select(g => g.Trim())
                 .Distinct()
                 .ToList();
-
-            Console.WriteLine("results: ");
-            foreach (var result in individualResults)
-            {
-                Console.WriteLine(result);
-            }
 
             return Ok(individualResults);
         }
