@@ -56,6 +56,8 @@ function LoginPage() {
       ? `${API_URL}/login?useCookies=true`
       : `${API_URL}/login?useSessionCookies=true`;
 
+    console.log(`loginUrl: ${loginUrl}`);
+
     try {
       const response = await fetch(loginUrl, {
         method: 'POST',
@@ -89,7 +91,14 @@ function LoginPage() {
   return (
     <>
       <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 3 }}>
-        <Navbar onSearchChange={() => {}} homePageBool={true} />
+        <Navbar
+          onSearchChange={() => {}}
+          homePageBool={true}
+          showSearch={false}
+          setShowSearch={() => {}}
+          searchInput=""
+          setSearchInput={() => {}}
+        />
       </div>
 
       <div className="position-relative vh-100 d-flex align-items-center justify-content-center bg-dark text-white">

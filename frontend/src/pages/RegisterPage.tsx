@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import Footer from '../components/Footer';
-import { API_URL } from '../config';
+import { registerUser } from '../api/MovieAPI';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -21,44 +21,44 @@ function Register() {
     if (name === 'confirmPassword') setConfirmPassword(value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !password || !confirmPassword) {
-      setError('Please fill in all fields.');
+      setError(['Please fill in all fields.']);
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Please enter a valid email address.');
+      setError(['Please enter a valid email address.']);
     } else if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(['Passwords do not match.']);
     } else {
-      setError('');
-      fetch(`${API_URL}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      })
-        .then((data) => {
-          console.log(data);
-          if (data.ok) {
-            setError('Successful registration. Please log in.');
-            navigate('/login');
-          } else {
-            setError('Error registering.');
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          setError('Error registering.');
-        });
+      try {
+        await registerUser(email, password);
+        setError(['Successful registration. Please log in.']);
+        navigate('/login');
+      } catch (err) {
+        const errorData = err as { errors?: Record<string, string[]> };
+        if (errorData.errors) {
+          // Combine all messages from the server
+          const allErrors = Object.values(errorData.errors).flat();
+          setError(allErrors); // You could also map these into <ul> if you prefer
+        } else {
+          setError(['Error registering.']);
+        }
+      }
     }
   };
 
   return (
     <>
       <div className="position-fixed top-0 start-0 w-100" style={{ zIndex: 3 }}>
-        <Navbar onSearchChange={() => {}} homePageBool={true} />
+        <Navbar
+          onSearchChange={() => {}}
+          homePageBool={true}
+          showSearch={false}
+          setShowSearch={() => {}}
+          searchInput=""
+          setSearchInput={() => {}}
+        />
       </div>
 
       <div className="position-relative vh-100 d-flex align-items-center justify-content-center bg-dark text-white">
@@ -171,10 +171,14 @@ function Register() {
               </button>
             </div>
 
-            {error && (
-              <strong>
-                <p className="text-danger">{error}</p>
-              </strong>
+            {error.length > 0 && (
+              <div className="text-danger mb-3">
+                <ul className="mb-0">
+                  {error.map((errMsg, idx) => (
+                    <li key={idx}>{errMsg}</li>
+                  ))}
+                </ul>
+              </div>
             )}
           </form>
         </div>

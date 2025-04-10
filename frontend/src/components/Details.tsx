@@ -105,7 +105,13 @@ const Details: React.FC = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar
+        onSearchChange={() => {}}
+        showSearch={false}
+        setShowSearch={() => {}}
+        searchInput=""
+        setSearchInput={() => {}}
+      />
       <div className="container details-container">
         {/* Movie Details & Poster */}
         <div className="row h-100">

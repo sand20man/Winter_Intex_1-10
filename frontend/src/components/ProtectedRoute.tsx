@@ -12,6 +12,8 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     const checkAuth = async () => {
+      console.log('Getting to checkAuth');
+
       try {
         const response = await fetch(`${API_URL}/pingauth`, {
           method: 'GET',

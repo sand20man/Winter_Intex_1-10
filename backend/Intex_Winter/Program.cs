@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Intex_Winter.Data;
 using Intex_Winter.Models;
 using Intex_Winter.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
+    // Password improvements
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 10;
+    options.Password.RequiredUniqueChars = 4;
+
+    // Default SignIn settings.
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
     options.ClaimsIdentity.UserNameClaimType = ClaimTypes.Email;
 });
@@ -50,10 +63,24 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".AspNetCore.Identity.Application";
-    options.Cookie.SameSite = SameSiteMode.None; // Required for cross-origin
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;              // ✅ Needed for cross-origin
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // ⚠️ Allows HTTP in dev
     options.Cookie.HttpOnly = true;
-    options.LoginPath = "/login";
+
+    options.Events.OnRedirectToLogin = context =>
+    {
+        var path = context.Request.Path;
+        if (path.StartsWithSegments("/login") ||
+            path.StartsWithSegments("/pingauth") ||
+            path.StartsWithSegments("/get-user-id"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        }
+
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
 });
 
 
@@ -65,35 +92,30 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .SetIsOriginAllowedToAllowWildcardSubdomains();
 
         });
 });
+
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, CustomUserClaimsPrincipalFactory>();
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, NoOpEmailSender<IdentityUser>>();
 builder.Services.AddSingleton<BlobService>();
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-});
-
-
 var app = builder.Build();
 
 
 // Middleware to allow OPTIONS requests before auth and routing
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == HttpMethods.Options)
-    {
-        context.Response.StatusCode = 204;
-        return;
-    }
-    await next();
-});
+// app.Use(async (context, next) =>
+// {
+//     if (context.Request.Method == HttpMethods.Options)
+//     {
+//         context.Response.StatusCode = 204;
+//         return;
+//     }
+//     await next();
+// });
 
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -142,7 +164,7 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     await signInManager.SignOutAsync();
     context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
     return Results.Ok(new { message = "Logout successful" });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 async Task SeedRoles(IServiceProvider serviceProvider)
 {
@@ -190,14 +212,14 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
     var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
     var allClaims = user.Claims.Select(c => new { c.Type, c.Value });
-    
+
     return Results.Json(new
     {
         email = email,
         roles = roles,
         claims = allClaims
     });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 app.MapGet("/get-role-by-email", async (
     [FromQuery] string email,
@@ -232,7 +254,7 @@ app.MapGet("/get-role-by-email", async (
     {
         role = roleName ?? "none"
     });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 app.MapGet("/get-user-id", async (
     [FromQuery] string email,
@@ -240,7 +262,7 @@ app.MapGet("/get-user-id", async (
 {
     var user = await db.MoviesUsers
         .Where(mu => mu.Email == email)
-        .Select(mu => new { mu.UserId }) // or whatever your ID field is
+        // .Select(mu => new { mu.UserId }) // or whatever your ID field is
         .FirstOrDefaultAsync();
 
     if (user == null)
@@ -254,4 +276,7 @@ app.MapGet("/get-user-id", async (
 
 app.MapGet("/test-alive", () => "I am alive!");
 
+app.MapGet("/cors-test", () => Results.Ok("GET worked"))
+   .RequireCors("AllowFrontend");
+   
 app.Run();

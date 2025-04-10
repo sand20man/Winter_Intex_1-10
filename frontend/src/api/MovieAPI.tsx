@@ -111,7 +111,7 @@ export const fetchSearch = async (search: string | null): Promise<Movie[]> => {
     const data: Movie[] = await response.json();
     return data as Movie[];
   } catch (error) {
-    console.error('Error fetching movies:', error);
+    console.error('Error fetching movies for search:', error);
     throw error;
   }
 };
@@ -135,7 +135,11 @@ export const fetchGenre = async (
     const data: Movie[] = await response.json();
     return data; // Accessing the 'Movies' array inside the result object
   } catch (error) {
+<<<<<<< HEAD
     console.error('Error fetching genre movies:', error);
+=======
+    console.error('Error fetching genre-based movies:', error);
+>>>>>>> origin/main
     throw error;
   }
 };
@@ -152,7 +156,7 @@ export const fetchAllGenres = async (): Promise<string[]> => {
     const data: string[] = await response.json();
     return data as string[];
   } catch (error) {
-    console.error('Error fetching movies:', error);
+    console.error('Error fetching movies in all genres:', error);
     throw error;
   }
 };
@@ -169,7 +173,7 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
     const data: Movie = await response.json();
     return data as Movie;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching single movie:', error);
     throw error;
   }
 };
@@ -198,7 +202,7 @@ export const getRecommendations = async (showId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching movie recommendations:', error);
     throw error;
   }
 };
@@ -218,7 +222,7 @@ export const getUserRecommendations = async (userId: number) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching user movie recommendation:', error);
     throw error;
   }
 };
@@ -238,49 +242,60 @@ export const getContentRecommendations = async (showId: string) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error fetching movie:', error);
+    console.error('Error fetching movie content-based recommendations:', error);
     throw error;
   }
 };
 
 export const fetchCurrentUser = async () => {
-  let email = '';
-  // 1. Get email from pingauth
-  await fetch(`${API_URL}/pingauth`, {
-    method: 'GET',
-    credentials: 'include',
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      email = data.email;
-      console.log(`Email: ${data.email}`);
-    })
-    .catch((err) => console.error('PingAuth Fetch failed:', err));
+  try {
+    const pingRes = await fetch(`${API_URL}/pingauth`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-  console.log(`email to lookup for id: ${email}`);
+    const contentType = pingRes.headers.get('content-type');
+    if (!pingRes.ok || !contentType?.includes('application/json')) {
+      const errorText = await pingRes.text();
+      console.error('PingAuth Fetch failed (non-JSON):', errorText);
+      return {
+        name: 'Unknown',
+        userId: 0,
+      };
+    }
 
-  // 2. Use that to fetch userId from movie_users
-  const encodedEmail = encodeURIComponent(email);
-  const userRes = await fetch(`${API_URL}/get-user-id?email=${encodedEmail}`, {
-    method: 'GET',
-    credentials: 'include',
-  });
+    const pingData = await pingRes.json();
+    const email = pingData.email;
+    console.log(`Email: ${email}`);
 
-  const userData = await userRes.json();
-  console.log(`UserData: ${JSON.stringify(userData)}`);
-  console.log(`Typeof userData: ${typeof userData}`);
-  console.log(`${typeof userData === 'string'}`);
+    // Step 2 - Fetch user ID
+    const encodedEmail = encodeURIComponent(email);
+    const userRes = await fetch(
+      `${API_URL}/get-user-id?email=${encodedEmail}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    );
 
-  if (typeof userData === 'string') {
-    // It's an error message like "User not found"
-    return {
-      name: 'Unknown',
-      userId: 0,
-    };
+    if (!userRes.ok) {
+      const errorMsg = await userRes.text();
+      console.error('get-user-id failed:', errorMsg);
+      return { name: 'Unknown', userId: 0 };
+    }
+
+    const userData = await userRes.json();
+    console.log(`UserData:`, userData);
+
+    if (typeof userData === 'string') {
+      return { name: 'Unknown', userId: 0 };
+    }
+
+    return userData;
+  } catch (err) {
+    console.error('Error in fetchCurrentUser:', err);
+    return { name: 'Unknown', userId: 0 };
   }
-
-  console.log(`UserId: ${userData.userId}`);
-  return userData.userId;
 };
 
 export const submitUserRating = async (
@@ -300,4 +315,23 @@ export const submitUserRating = async (
   if (!response.ok) {
     throw new Error(`Failed to submit rating: ${response.status}`);
   }
+};
+
+export const registerUser = async (email: string, password: string) => {
+  const response = await fetch(`${API_URL}/register`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw data; // Throw to be caught by the component
+  }
+
+  return data;
 };

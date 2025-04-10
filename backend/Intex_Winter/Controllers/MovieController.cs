@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Intex_Winter.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MovieController : ControllerBase
