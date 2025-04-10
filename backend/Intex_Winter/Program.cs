@@ -42,7 +42,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 10;
     options.Password.RequiredUniqueChars = 4;
 
-    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier;
@@ -66,7 +66,7 @@ builder.Services.ConfigureApplicationCookie(options =>
             context.ShouldRenew = false;
         }
     };
-
+    
     options.Events.OnRedirectToLogin = context =>
     {
         var consent = context.Request.Cookies["cookie_consent"];
@@ -75,11 +75,11 @@ builder.Services.ConfigureApplicationCookie(options =>
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             return Task.CompletedTask;
         }
-
+    
         context.Response.Redirect(context.RedirectUri);
         return Task.CompletedTask;
     };
-
+    
     options.Events.OnRedirectToAccessDenied = context =>
     {
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
