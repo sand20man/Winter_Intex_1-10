@@ -27,6 +27,18 @@ function MoviePage() {
   // Fetch all genres once
   useEffect(() => {
     const loadRecommendations = async () => {
+      console.log('Getting users credentials');
+      await fetch(
+        'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth',
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      )
+        .then((res) => res.json())
+        .then((data) => console.log(`User data ${data.name}, ${data.email}`))
+        .catch((err) => console.error('PingAuth Fetch failed:', err));
+
       try {
         // Get user info from backend
         console.log('Attempting to fetch current user');
