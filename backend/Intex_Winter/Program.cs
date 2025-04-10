@@ -181,7 +181,7 @@ public static async Task SeedRoles(IServiceProvider serviceProvider)
         await userManager.AddToRoleAsync(adminUser, "admin");
     }
 }
-
+// TODO
 
 app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
 {
