@@ -240,7 +240,7 @@ app.MapGet("/get-user-id", async (
 {
     var user = await db.MoviesUsers
         .Where(mu => mu.Email == email)
-        .Select(mu => new { mu.UserId }) // or whatever your ID field is
+        // .Select(mu => new { mu.UserId }) // or whatever your ID field is
         .FirstOrDefaultAsync();
 
     if (user == null)
