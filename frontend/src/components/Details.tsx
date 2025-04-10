@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   fetchCurrentUser,
   fetchSingle,
+  fetchUserRating,
   getContentRecommendations,
   getPosterUrl,
   getRecommendations,
@@ -33,15 +34,23 @@ const Details: React.FC = () => {
     []
   );
   const [userRating, setUserRating] = useState<number>(0);
+  const [userId, setUserId] = useState<number | null>(null);
+
 
   const handleRating = async (newRating: number) => {
     setUserRating(newRating); // optimistic UI update
 
     try {
-      // Get user info from backend
-      const user = await fetchCurrentUser();
-      const userId = user.userId;
-      await submitUserRating(showId!, userId, newRating);
+      // // Get user info from backend
+      // const user = await fetchCurrentUser();
+      // // const rating = await fetchUserRating(showId!, user.userId);
+      // const rating = await fetchUserRating('s4634', 2);
+      // console.log("Rating api returns", rating)
+      // setUserRating(rating);
+
+      // const userId = user.userId;
+
+      await submitUserRating(showId!, userId!, newRating);
     } catch (err) {
       console.error('Failed to submit rating:', err);
       // Optionally rollback or show toast
@@ -93,6 +102,15 @@ const Details: React.FC = () => {
         setContentRecommended(contentDetails.filter((m) => m !== null));
       } catch (error) {
         console.error('Content Filter Recommender issue', error);
+      }
+      try {
+        const user = await fetchCurrentUser();
+        setUserId(user.userId)
+        const rating = await fetchUserRating(showId!, user.userId);
+        // const rating = await fetchUserRating('s4634', 2);
+        setUserRating(rating);
+      } catch (error) {
+        console.error('Failed to fetch user rating:', error);
       }
     };
 
