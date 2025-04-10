@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { Navigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const UserContext = createContext<User | null>(null);
 

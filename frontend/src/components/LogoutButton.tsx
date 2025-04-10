@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
+import { API_URL } from '../config';
 
 export default function LogoutButton() {
   const navigate = useNavigate();
