@@ -232,6 +232,6 @@ app.MapGet("/get-role-by-email", async (
     {
         role = roleName ?? "none"
     });
-}).RequireAuthorization();
+});//.RequireAuthorization();
 
 app.Run();
