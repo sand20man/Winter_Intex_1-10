@@ -1,7 +1,7 @@
+import { API_URL } from '../config';
 import { Movie } from '../types/Movie';
 
-const api_URL =
-  'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/api';
+const api_URL = `${API_URL}/api`;
 
 export interface FetchMoviesResponse {
   movies: Movie[];

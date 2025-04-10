@@ -8,11 +8,7 @@ export default function LogoutButton() {
   const handleLogout = async () => {
     try {
       // 1. Sign out of backend first — it has session cookies
-      await axios.post(
-        'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/logout',
-        {},
-        { withCredentials: true }
-      );
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
 
       // 2. Then sign out from Firebase if needed
       const auth = getAuth();

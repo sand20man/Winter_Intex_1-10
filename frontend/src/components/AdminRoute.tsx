@@ -1,6 +1,7 @@
 import { JSX, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 export default function AdminRoute({ children }: { children: JSX.Element }) {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -9,13 +10,10 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
   useEffect(() => {
     const checkRole = async () => {
       try {
-        const response = await axios.get(
-          'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/api/roles',
-          {
-            method: 'GET',
-            withCredentials: true,
-          }
-        );
+        const response = await axios.get(`${API_URL}/api/roles`, {
+          method: 'GET',
+          withCredentials: true,
+        });
 
         console.log('Roles response:', response.data);
 

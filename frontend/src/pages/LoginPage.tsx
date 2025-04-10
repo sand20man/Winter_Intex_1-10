@@ -5,6 +5,7 @@ import Navbar from '../components/NavBar';
 import Footer from '../components/Footer';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import { API_URL } from '../config';
 
 function LoginPage() {
   const [email, setEmail] = useState<string>('');
@@ -52,8 +53,8 @@ function LoginPage() {
     }
 
     const loginUrl = rememberme
-      ? 'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/login?useCookies=true'
-      : 'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/login?useSessionCookies=true';
+      ? `${API_URL}/login?useCookies=true`
+      : `${API_URL}/login?useSessionCookies=true`;
 
     try {
       const response = await fetch(loginUrl, {

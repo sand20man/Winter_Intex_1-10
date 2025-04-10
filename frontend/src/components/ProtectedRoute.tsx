@@ -1,5 +1,6 @@
 import { JSX, useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { API_URL } from '../config';
 
 export default function ProtectedRoute({
   children,
@@ -12,13 +13,10 @@ export default function ProtectedRoute({
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(
-          'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/pingauth',
-          {
-            method: 'GET',
-            credentials: 'include',
-          }
-        );
+        const response = await fetch(`${API_URL}/pingauth`, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {

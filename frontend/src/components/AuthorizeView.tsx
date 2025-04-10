@@ -44,13 +44,10 @@ function AuthorizeView(props: { children: React.ReactNode }) {
       }
     }
 
-    fetchWithRetry(
-      'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/pingauth',
-      {
-        method: 'GET',
-        credentials: 'include',
-      }
-    );
+    fetchWithRetry(`${API_URL}/pingauth`, {
+      method: 'GET',
+      credentials: 'include',
+    });
   }, []);
 
   if (loading) {

@@ -13,6 +13,7 @@ import {
   // fetchCurrentUser,
 } from '../api/MovieAPI';
 import '../components/MovieCard.css';
+import { API_URL } from '../config';
 
 function MoviePage() {
   const [searchQuery, setSearchQuery] = useState<string | null>(null);
@@ -29,13 +30,10 @@ function MoviePage() {
     const loadRecommendations = async () => {
       let email = '';
       console.log('Getting users credentials');
-      await fetch(
-        'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/pingauth',
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      )
+      await fetch(`${API_URL}/pingauth`, {
+        method: 'GET',
+        credentials: 'include',
+      })
         .then((res) => res.json())
         .then((data) => (email = data.email))
         .catch((err) => console.error('PingAuth Fetch failed:', err));
@@ -43,7 +41,7 @@ function MoviePage() {
       console.log('fetching user role through loops');
       const encodedEmail = encodeURIComponent(email);
       const response = await fetch(
-        `https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/get-role-by-email?email=${encodedEmail}`,
+        `${API_URL}/get-role-by-email?email=${encodedEmail}`,
         {
           method: 'GET',
           credentials: 'include',

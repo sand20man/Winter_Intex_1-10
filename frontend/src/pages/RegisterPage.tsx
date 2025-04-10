@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/NavBar';
 import Footer from '../components/Footer';
+import { API_URL } from '../config';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -31,16 +32,13 @@ function Register() {
       setError('Passwords do not match.');
     } else {
       setError('');
-      fetch(
-        'https://newwinterintex-dnfcbuhehgdyhkfp.eastus-01.azurewebsites.net/register',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      )
+      fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
         .then((data) => {
           console.log(data);
           if (data.ok) {
