@@ -172,7 +172,7 @@ function MoviePage() {
       <Navbar onSearchChange={setSearchQuery} homePageBool={false} />
       <GenreFilter onGenreSelect={setSelectedGenre} />
 
-      {recommendedMovies.length > 0 && (
+      {!searchQuery && !selectedGenre && recommendedMovies.length > 0 && (
         <>
           <h2 className="text-xl font-bold ml-4 mt-6">
             Recommended for You Based on Movies You've Rated
