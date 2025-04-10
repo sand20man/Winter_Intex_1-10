@@ -259,7 +259,8 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-
+        
+        [AllowAnonymous]
         [HttpGet("ContentRecommender")]
         public async Task<IActionResult> ContentRecommendedMovies([FromQuery] string showId)
         {
@@ -285,7 +286,31 @@ namespace Intex_Winter.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-        
-        
+
+        [AllowAnonymous]
+        [HttpPost("rating")]
+        public async Task<IActionResult> SubmitRating([FromBody] MoviesRating ratingData)
+        {
+            if (ratingData == null || string.IsNullOrWhiteSpace(ratingData.ShowId))
+            {
+                return BadRequest("Invalid rating data.");
+            }
+
+            // Check if it exists — update if so, insert otherwise
+            var existing = await _context.MoviesRatings
+                .FirstOrDefaultAsync(r => r.UserId == ratingData.UserId && r.ShowId == ratingData.ShowId);
+
+            if (existing != null)
+            {
+                existing.Rating = ratingData.Rating;
+            }
+            else
+            {
+                _context.MoviesRatings.Add(ratingData);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Rating saved successfully" });
+        }
     }
 }
