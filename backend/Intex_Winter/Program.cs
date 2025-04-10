@@ -68,16 +68,16 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.LoginPath = "/login";
     
-    options.Events.OnValidatePrincipal = async context =>
-    {
-        var consent = context.HttpContext.Request.Cookies["cookie_consent"];
-        if (consent != "true")
-        {
-            // Sign out the user if consent was withdrawn or not granted
-            await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-            context.ShouldRenew = false; // Optional: prevents cookie renewal
-        }
-    };
+    // options.Events.OnValidatePrincipal = async context =>
+    // {
+    //     var consent = context.HttpContext.Request.Cookies["cookie_consent"];
+    //     if (consent != "true")
+    //     {
+    //         // Sign out the user if consent was withdrawn or not granted
+    //         await context.HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+    //         context.ShouldRenew = false; // Optional: prevents cookie renewal
+    //     }
+    // };
 
     options.Events.OnRedirectToLogin = context =>
     {
