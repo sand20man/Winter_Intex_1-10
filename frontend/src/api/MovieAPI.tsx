@@ -285,11 +285,11 @@ export const submitUserRating = async (
   rating: number
 ) => {
   const response = await fetch(`${api_URL}/Movie/rating`, {
-    method: 'POST', // or 'PUT' depending on your backend
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include', // if you're using cookie auth
+    credentials: 'include',
     body: JSON.stringify({ showId, userId, rating }),
   });
 
@@ -298,20 +298,14 @@ export const submitUserRating = async (
   }
 };
 
-export async function registerUser(email: string, password: string) {
+export const registerUser = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await response.json();
-
   if (!response.ok) {
-    throw data; // Throw to be caught by the component
+    throw new Error('Registration failed'); // Or customize this message
   }
-
-  return data;
-}
+};

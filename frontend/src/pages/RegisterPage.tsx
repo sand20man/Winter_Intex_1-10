@@ -33,17 +33,9 @@ function Register() {
     } else {
       try {
         await registerUser(email, password);
-        setError(['Successful registration. Please log in.']);
         navigate('/login');
-      } catch (err) {
-        const errorData = err as { errors?: Record<string, string[]> };
-        if (errorData.errors) {
-          // Combine all messages from the server
-          const allErrors = Object.values(errorData.errors).flat();
-          setError(allErrors); // You could also map these into <ul> if you prefer
-        } else {
-          setError(['Error registering.']);
-        }
+      } catch (err: any) {
+        setError([err.message || 'Unexpected registration error']);
       }
     }
   };
