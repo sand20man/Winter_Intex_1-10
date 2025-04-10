@@ -83,19 +83,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
-// app.Use(async (context, next) =>
-// {
-//     // TEMP CORS override for debugging
-//     context.Response.OnStarting(() =>
-//     {
-//         context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
-//         context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-//         return Task.CompletedTask;
-//     });
-
-//     await next();
-// });
-
 
 // Middleware to allow OPTIONS requests before auth and routing
 app.Use(async (context, next) =>
@@ -179,7 +166,12 @@ async Task SeedRoles(IServiceProvider serviceProvider)
         await userManager.AddToRoleAsync(adminUser, "admin");
     }
 }
-// TODO
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRoles(services); // THIS calls the seeding function
+}
 
 app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
 {
@@ -197,11 +189,51 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
     var roles = await userManager.GetRolesAsync(currentUser);
     var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
+    var allClaims = user.Claims.Select(c => new { c.Type, c.Value });
+    
     return Results.Json(new
     {
         email = email,
-        roles = roles
+        roles = roles,
+        claims = allClaims
     });
 }).RequireAuthorization();
+
+app.MapGet("/get-role-by-email", async (
+    [FromQuery] string email,
+    UserManager<IdentityUser> userManager,
+    RoleManager<IdentityRole> roleManager,
+    ApplicationDbContext db) =>
+{
+    var user = await userManager.FindByEmailAsync(email);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    var userId = user.Id;
+
+    var roleId = await db.UserRoles
+        .Where(ur => ur.UserId == userId)
+        .Select(ur => ur.RoleId)
+        .FirstOrDefaultAsync();
+
+    if (roleId == null)
+    {
+        return Results.Ok(new { role = "none" });
+    }
+
+    var roleName = await db.Roles
+        .Where(r => r.Id == roleId)
+        .Select(r => r.Name)
+        .FirstOrDefaultAsync();
+
+    return Results.Ok(new
+    {
+        role = roleName ?? "none"
+    });
+});//.RequireAuthorization();
+
+app.MapGet("/test-alive", () => "I am alive!");
 
 app.Run();

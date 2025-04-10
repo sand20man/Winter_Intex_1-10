@@ -9,4 +9,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
         : base(options)
     {
     }
+    
+    public DbSet<IdentityUserRole<string>> UserRoles { get; set; } = null!;
+    public DbSet<IdentityRole> Roles { get; set; } = null!;
+    public DbSet<IdentityUser> Users { get; set; } = null!;
 }

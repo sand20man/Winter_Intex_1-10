@@ -60,6 +60,7 @@ const Details: React.FC = () => {
       }
 
       try {
+        setRecommendedMovies([]); // optional but helps UI reset
         const recData = await getRecommendations(showId);
         const recIds = [
           recData.rec1,
@@ -71,6 +72,7 @@ const Details: React.FC = () => {
         const recDetails = await Promise.all(
           recIds.map((id) => fetchSingle(id))
         );
+
         setRecommendedMovies(recDetails);
       } catch (error) {
         console.error('Collaborative Filter Recommender issue', error);
@@ -78,7 +80,6 @@ const Details: React.FC = () => {
 
       try {
         const contentRecData = await getContentRecommendations(showId);
-        console.log('Content recs:', contentRecData);
         const contentRecIds = Object.entries(contentRecData)
           .filter(([key]) => key.startsWith('rec'))
           .map(([, value]) => value as string);
@@ -107,7 +108,7 @@ const Details: React.FC = () => {
       <NavBar />
       <div className="container details-container">
         {/* Movie Details & Poster */}
-        <div className="row">
+        <div className="row h-100">
           {/* Left Column */}
           <div className="col-md-8">
             <div className="movie-info">
@@ -140,6 +141,7 @@ const Details: React.FC = () => {
                   Others who watched <strong>{movie.title}</strong>
                 </h3>
                 <MovieCarousel
+                  key={showId}
                   movies={recommendedMovies.map((m) => ({
                     showId: m.showId,
                     title: m.title,
@@ -151,12 +153,12 @@ const Details: React.FC = () => {
           </div>
           {/* Right Column: Poster + Star Rating */}
 
-          <div className="col-md-4 d-flex align-items-start justify-content-center">
-            <div className="poster-container flex-column">
+          <div className="col-md-4 h-100">
+            <div className="poster-container">
               <img
                 src={getPosterUrl(movie.title)}
                 alt={`${movie.title} poster`}
-                className="movie-poster img-fluid"
+                className="main-poster"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     '/logos/VerticalLogo.png';
@@ -164,7 +166,7 @@ const Details: React.FC = () => {
               />
               <div className="star-rating-wrapper">
                 <br />
-                <h6>Rate Your Movie</h6>
+                <h6>Rate This Movie</h6>
                 <StarRating
                   rating={userRating} // this will come from state or API
                   onRate={handleRating} // call your backend
