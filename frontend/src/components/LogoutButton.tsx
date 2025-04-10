@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
+import { API_URL } from '../config';
 
 export default function LogoutButton() {
   const navigate = useNavigate();
@@ -8,11 +9,7 @@ export default function LogoutButton() {
   const handleLogout = async () => {
     try {
       // 1. Sign out of backend first — it has session cookies
-      await axios.post(
-        'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/logout',
-        {},
-        { withCredentials: true }
-      );
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
 
       // 2. Then sign out from Firebase if needed
       const auth = getAuth();

@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { API_URL } from '../config';
 
 export default function AdminRoute({ children }: { children: JSX.Element }) {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -9,24 +9,48 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
   useEffect(() => {
     const checkRole = async () => {
       try {
-        const response = await axios.get(
-          'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/api/roles',
+        let email = '';
+        console.log('Getting users credentials');
+        await fetch(`${API_URL}/pingauth`, {
+          method: 'GET',
+          credentials: 'include',
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            email = data.email;
+            console.log(`Email: ${data.email}`);
+          })
+          .catch((err) => console.error('PingAuth Fetch failed:', err));
+
+        console.log('fetching user role through loops');
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${API_URL}/get-role-by-email?email=${encodedEmail}`,
           {
-            withCredentials: true,
+            method: 'GET',
+            credentials: 'include',
           }
         );
-        console.log(`response: ${response.data}`);
-        setIsAdmin(response.data.includes('admin'));
+        console.log('data retrieval...');
+        const data = await response.json();
+        console.log(`data: ${data}`);
+
+        if (data.role === 'admin') {
+          console.log('user is admin');
+          setIsAdmin(true);
+        } else {
+          console.log('user is not admin');
+          setIsAdmin(false);
+        }
       } catch (error) {
+        console.error('Error checking roles:', error);
         setIsAdmin(false);
-        console.log(`Error, ${error}`);
       }
     };
 
     checkRole();
   }, []);
 
-  // Redirect once when determined user is not admin
   useEffect(() => {
     if (isAdmin === false) {
       alert('You are not an admin!');
@@ -34,7 +58,7 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
     }
   }, [isAdmin, navigate]);
 
-  if (isAdmin === null) return <p>Loading...</p>;
+  if (isAdmin === null) return <p>Checking admin privileges...</p>;
   if (!isAdmin) return null;
 
   return children;

@@ -60,6 +60,7 @@ const Details: React.FC = () => {
       }
 
       try {
+        setRecommendedMovies([]); // optional but helps UI reset
         const recData = await getRecommendations(showId);
         const recIds = [
           recData.rec1,
@@ -71,6 +72,7 @@ const Details: React.FC = () => {
         const recDetails = await Promise.all(
           recIds.map((id) => fetchSingle(id))
         );
+
         setRecommendedMovies(recDetails);
       } catch (error) {
         console.error('Collaborative Filter Recommender issue', error);
@@ -106,7 +108,7 @@ const Details: React.FC = () => {
       <NavBar />
       <div className="container details-container">
         {/* Movie Details & Poster */}
-        <div className="row">
+        <div className="row h-100">
           {/* Left Column */}
           <div className="col-md-8">
             <div className="movie-info">
@@ -136,10 +138,10 @@ const Details: React.FC = () => {
             {recommendedMovies.length > 0 && (
               <div className="recommended-section mt-4">
                 <h3 className="recommended-heading">
-                  Other people who watch {movie.title}, <br />
-                  enjoyed these films too
+                  Others who watched <strong>{movie.title}</strong>
                 </h3>
                 <MovieCarousel
+                  key={showId}
                   movies={recommendedMovies.map((m) => ({
                     showId: m.showId,
                     title: m.title,
@@ -149,24 +151,27 @@ const Details: React.FC = () => {
               </div>
             )}
           </div>
+          {/* Right Column: Poster + Star Rating */}
 
-          {/* Right Column: Poster */}
-          <div className="col-md-4 d-flex align-items-start justify-content-center">
+          <div className="col-md-4 h-100">
             <div className="poster-container">
               <img
                 src={getPosterUrl(movie.title)}
                 alt={`${movie.title} poster`}
-                className="movie-poster img-fluid"
+                className="main-poster"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src =
                     '/logos/VerticalLogo.png';
                 }}
               />
-
-              <StarRating
-                rating={userRating} // this will come from state or API
-                onRate={handleRating} // call your backend
-              />
+              <div className="star-rating-wrapper">
+                <br />
+                <h6>Rate This Movie</h6>
+                <StarRating
+                  rating={userRating} // this will come from state or API
+                  onRate={handleRating} // call your backend
+                />
+              </div>
             </div>
           </div>
         </div>

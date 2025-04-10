@@ -49,7 +49,6 @@ const Navbar: React.FC<NavbarProps> = ({
       try {
         // Get user info from backend
         const user = await fetchCurrentUser();
-
         setName(user.name.split(' ')[0]);
       } catch (error) {
         console.error('Failed to load recommendations', error);

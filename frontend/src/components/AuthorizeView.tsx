@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react';
 import { Navigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const UserContext = createContext<User | null>(null);
 
@@ -16,7 +17,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
   const [user, setUser] = useState(emptyuser);
 
   useEffect(() => {
-    async function fetchWithRetry(url: string, options: any) {
+    async function fetchWithRetry(url: string, options: RequestInit) {
       try {
         const response = await fetch(url, options);
         //console.log('AuthorizeView: Raw Response:', response);
@@ -44,7 +45,7 @@ function AuthorizeView(props: { children: React.ReactNode }) {
       }
     }
 
-    fetchWithRetry('https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/pingauth', {
+    fetchWithRetry(`${API_URL}/pingauth`, {
       method: 'GET',
       credentials: 'include',
     });

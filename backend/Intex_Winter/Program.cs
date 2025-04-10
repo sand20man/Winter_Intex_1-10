@@ -62,7 +62,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000/", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
+            policy.WithOrigins("http://localhost:3000", "https://jolly-plant-06ec5441e.6.azurestaticapps.net")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -82,19 +82,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 
 var app = builder.Build();
-
-// app.Use(async (context, next) =>
-// {
-//     // TEMP CORS override for debugging
-//     context.Response.OnStarting(() =>
-//     {
-//         context.Response.Headers["Access-Control-Allow-Origin"] = "https://jolly-plant-06ec5441e.6.azurestaticapps.net";
-//         context.Response.Headers["Access-Control-Allow-Credentials"] = "true";
-//         return Task.CompletedTask;
-//     });
-
-//     await next();
-// });
 
 
 // Middleware to allow OPTIONS requests before auth and routing
@@ -149,45 +136,6 @@ else
 app.MapControllers();
 app.MapIdentityApi<IdentityUser>();
 
-app.MapPost("/auth/login", async (
-    HttpContext context,
-    SignInManager<IdentityUser> signInManager,
-    UserManager<IdentityUser> userManager,
-    [FromBody] LoginDto login
-) =>
-{
-    try
-    {
-        var user = await userManager.FindByEmailAsync(login.Email);
-        if (user == null)
-        {
-            return Results.Json(
-                new { message = "Invalid credentials" },
-                statusCode: StatusCodes.Status401Unauthorized
-            );
-        }
-
-        var result = await signInManager.PasswordSignInAsync(
-            user, login.Password, isPersistent: true, lockoutOnFailure: false);
-
-        if (!result.Succeeded)
-        {
-            return Results.Json(
-                new { message = "Invalid login attempt" },
-                statusCode: StatusCodes.Status401Unauthorized
-            );
-        }
-
-        return Results.Ok(new { message = "Login successful" });
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("🔥 Login exception: " + ex);
-        return Results.Problem("Server error occurred. See logs.");
-    }
-});
-
-
 
 app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> signInManager) =>
 {
@@ -196,64 +144,114 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     return Results.Ok(new { message = "Logout successful" });
 }).RequireAuthorization();
 
-app.MapGet("/pingauth", (ClaimsPrincipal user) =>
+async Task SeedRoles(IServiceProvider serviceProvider)
 {
-    if (!user.Identity?.IsAuthenticated ?? false)
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    string[] roleNames = { "admin", "user" };
+
+    foreach (var roleName in roleNames)
     {
-        return Results.Unauthorized();
-    }
-
-    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com"; // Ensure it's never null
-    return Results.Json(new { email = email }); // Return as JSON
-}).RequireAuthorization();
-
-// Create a service scope so you can use DI services like UserManager/RoleManager
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    // Get the role manager and user manager
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-
-    // Define the roles you want to ensure exist
-    string[] roles = { "admin", "user" };
-
-    // Create roles if they don’t already exist
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
+        if (!await roleManager.RoleExistsAsync(roleName))
         {
-            await roleManager.CreateAsync(new IdentityRole(role));
+            await roleManager.CreateAsync(new IdentityRole(roleName));
         }
     }
 
-    // Check if your admin user exists and is assigned to the "admin" role
-    var adminEmail = "admin@admin.com";
+    var adminEmail = "jackestes10@yahoo.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
     if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "admin"))
     {
         await userManager.AddToRoleAsync(adminUser, "admin");
     }
 }
 
-app.MapGet("/api/roles", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
+using (var scope = app.Services.CreateScope())
 {
+    var services = scope.ServiceProvider;
+    await SeedRoles(services); // THIS calls the seeding function
+}
+
+app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
+{
+    if (!user.Identity?.IsAuthenticated ?? false)
+    {
+        return Results.Unauthorized();
+    }
+
     var currentUser = await userManager.GetUserAsync(user);
-    if (currentUser == null) return Results.Unauthorized();
+    if (currentUser == null)
+    {
+        return Results.Unauthorized();
+    }
 
     var roles = await userManager.GetRolesAsync(currentUser);
-    return Results.Json(new { roles }); // instead of just Results.Ok(roles)
+    var email = user.FindFirstValue(ClaimTypes.Email) ?? "unknown@example.com";
 
+    var allClaims = user.Claims.Select(c => new { c.Type, c.Value });
+    
+    return Results.Json(new
+    {
+        email = email,
+        roles = roles,
+        claims = allClaims
+    });
 }).RequireAuthorization();
 
+app.MapGet("/get-role-by-email", async (
+    [FromQuery] string email,
+    UserManager<IdentityUser> userManager,
+    RoleManager<IdentityRole> roleManager,
+    ApplicationDbContext db) =>
+{
+    var user = await userManager.FindByEmailAsync(email);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    var userId = user.Id;
+
+    var roleId = await db.UserRoles
+        .Where(ur => ur.UserId == userId)
+        .Select(ur => ur.RoleId)
+        .FirstOrDefaultAsync();
+
+    if (roleId == null)
+    {
+        return Results.Ok(new { role = "none" });
+    }
+
+    var roleName = await db.Roles
+        .Where(r => r.Id == roleId)
+        .Select(r => r.Name)
+        .FirstOrDefaultAsync();
+
+    return Results.Ok(new
+    {
+        role = roleName ?? "none"
+    });
+}).RequireAuthorization();
+
+app.MapGet("/get-user-id", async (
+    [FromQuery] string email,
+    MoviesDbContext db) =>
+{
+    var user = await db.MoviesUsers
+        .Where(mu => mu.Email == email)
+        .Select(mu => new { mu.UserId }) // or whatever your ID field is
+        .FirstOrDefaultAsync();
+
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+
+    return Results.Ok(user);
+});
+
+
+app.MapGet("/test-alive", () => "I am alive!");
 
 app.Run();
-return;
-
-void ConfigureServices(IServiceCollection services)
-{
-    services.AddSingleton<BlobService>();
-    services.AddControllersWithViews();
-}

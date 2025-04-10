@@ -1,7 +1,7 @@
+import { API_URL } from '../config';
 import { Movie } from '../types/Movie';
 
-const api_URL =
-  'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/api';
+const api_URL = `${API_URL}/api`;
 
 export interface FetchMoviesResponse {
   movies: Movie[];
@@ -171,7 +171,12 @@ export const fetchSingle = async (showId: string): Promise<Movie> => {
 };
 
 export const getPosterUrl = (title: string) => {
-  return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(title)}.jpg`;
+  const sanitizedTitle = title
+    .replace(/[^a-z0-9 ]/gi, '') // Allow only letters, numbers, and spaces
+    .trim(); // Trim leading/trailing spaces only
+
+  const fileName = `${sanitizedTitle}.jpg`;
+  return `https://moviepostersgroup110.blob.core.windows.net/movieposters/${encodeURIComponent(fileName)}`;
 };
 
 export const getRecommendations = async (showId: string) => {
@@ -184,7 +189,7 @@ export const getRecommendations = async (showId: string) => {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch recommendations');
+      throw new Error('Failed to fetch new recommendations');
     }
     const data = await response.json();
     return data;
@@ -235,22 +240,43 @@ export const getContentRecommendations = async (showId: string) => {
 };
 
 export const fetchCurrentUser = async () => {
-  try {
-    const response = await fetch(`${api_URL}/Auth/me`, {
-      method: 'GET',
-      credentials: 'include',
-    });
+  let email = '';
+  // 1. Get email from pingauth
+  await fetch(`${API_URL}/pingauth`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      email = data.email;
+      console.log(`Email: ${data.email}`);
+    })
+    .catch((err) => console.error('PingAuth Fetch failed:', err));
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch current user: ${response.status}`);
-    }
+  console.log(`email to lookup for id: ${email}`);
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    throw error;
+  // 2. Use that to fetch userId from movie_users
+  const encodedEmail = encodeURIComponent(email);
+  const userRes = await fetch(`${API_URL}/get-user-id?email=${encodedEmail}`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  const userData = await userRes.json();
+  console.log(`UserData: ${JSON.stringify(userData)}`);
+  console.log(`Typeof userData: ${typeof userData}`);
+  console.log(`${typeof userData === 'string'}`);
+
+  if (typeof userData === 'string') {
+    // It's an error message like "User not found"
+    return {
+      name: 'Unknown',
+      userId: 0,
+    };
   }
+
+  console.log(`UserId: ${userData.userId}`);
+  return userData.userId;
 };
 
 export const submitUserRating = async (
@@ -258,7 +284,7 @@ export const submitUserRating = async (
   userId: number,
   rating: number
 ) => {
-  const response = await fetch(`${api_URL}/Auth/rating`, {
+  const response = await fetch(`${api_URL}/Movie/rating`, {
     method: 'POST', // or 'PUT' depending on your backend
     headers: {
       'Content-Type': 'application/json',
