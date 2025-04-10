@@ -157,6 +157,32 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     return Results.Ok(new { message = "Logout successful" });
 }).RequireAuthorization();
 
+using Microsoft.AspNetCore.Identity;
+
+public static async Task SeedRoles(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    string[] roleNames = { "admin", "user" };
+
+    foreach (var roleName in roleNames)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+
+    var adminEmail = "jackestes10@yahoo.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser != null && !await userManager.IsInRoleAsync(adminUser, "admin"))
+    {
+        await userManager.AddToRoleAsync(adminUser, "admin");
+    }
+}
+// TODO
+
 app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrincipal user) =>
 {
     if (!user.Identity?.IsAuthenticated ?? false)
@@ -179,8 +205,5 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
         roles = roles
     });
 }).RequireAuthorization();
-
-
-
 
 app.Run();

@@ -9,10 +9,11 @@ export default function AdminRoute({ children }: { children: JSX.Element }) {
   useEffect(() => {
     const checkRole = async () => {
       try {
-        const response = await axios.get(
+        const response = await fetch(
           'https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/api/roles',
           {
-            withCredentials: true,
+            method: 'GET',
+            credentials: 'include',
           }
         );
 
