@@ -135,11 +135,7 @@ export const fetchGenre = async (
     const data: Movie[] = await response.json();
     return data; // Accessing the 'Movies' array inside the result object
   } catch (error) {
-<<<<<<< HEAD
-    console.error('Error fetching genre movies:', error);
-=======
     console.error('Error fetching genre-based movies:', error);
->>>>>>> origin/main
     throw error;
   }
 };
