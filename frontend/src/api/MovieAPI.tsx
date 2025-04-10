@@ -298,17 +298,23 @@ export const submitUserRating = async (
   }
 };
 
-export const registerUser = async (email: string, password: string) => {
+export async function registerUser(email: string, password: string) {
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ email, password }),
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error(`Registration failed with status ${response.status}`);
+    throw data; // Throw to be caught by the component
   }
-};
+
+  return data;
+}
 
 export const fetchUserRating = async (
   showId: string,
