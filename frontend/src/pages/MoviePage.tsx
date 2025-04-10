@@ -40,10 +40,16 @@ function MoviePage() {
         .then((data) => (email = data.email))
         .catch((err) => console.error('PingAuth Fetch failed:', err));
 
-      const response = await fetch(`/get-role-by-email?email=${email}`, {
-        credentials: 'include',
-      });
+      console.log('fetching user role through loops');
+      const response = await fetch(
+        `https://intexwinter-d4e7fdc7hhembcdg.eastus-01.azurewebsites.net/get-role-by-email?email=${email}`,
+        {
+          credentials: 'include',
+        }
+      );
+      console.log('data retrieval...');
       const data = await response.json();
+      console.log(`data: ${data}`);
 
       if (data.role === 'admin') {
         console.log('user is admin');
