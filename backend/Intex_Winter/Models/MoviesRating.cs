@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-
 namespace Intex_Winter.Models;
 
-[Keyless]
+[PrimaryKey("UserId", "ShowId")]
+
 [Table("movies_ratings")]
 public partial class MoviesRating
 {

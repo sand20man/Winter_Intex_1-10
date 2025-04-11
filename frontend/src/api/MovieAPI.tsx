@@ -262,7 +262,7 @@ export const fetchCurrentUser = async () => {
 
     const pingData = await pingRes.json();
     const email = pingData.email;
-    console.log(`Email: ${email}`);
+    // console.log(`Email: ${email}`);
 
     // Step 2 - Fetch user ID
     const encodedEmail = encodeURIComponent(email);
@@ -281,7 +281,7 @@ export const fetchCurrentUser = async () => {
     }
 
     const userData = await userRes.json();
-    console.log(`UserData:`, userData);
+    // console.log(`UserData:`, userData);
 
     if (typeof userData === 'string') {
       return { name: 'Unknown', userId: 0 };
@@ -299,13 +299,13 @@ export const submitUserRating = async (
   userId: number,
   rating: number
 ) => {
-  const response = await fetch(`${api_URL}/Movie/rating`, {
+  const response = await fetch(`${api_URL}/Movie/PutRating`, {
     method: 'POST', // or 'PUT' depending on your backend
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include', // if you're using cookie auth
-    body: JSON.stringify({ showId, userId, rating }),
+    body: JSON.stringify({ userId, showId, rating }),
   });
 
   if (!response.ok) {
@@ -333,4 +333,29 @@ export const registerUser = async (email: string, password: string) => {
   const data = text ? JSON.parse(text) : {};
 
   return data;
+};
+
+
+export const fetchUserRating = async (
+  userId: number,
+  showId: string
+): Promise<number | null> => {
+  try {
+    const response = await fetch(
+      `${api_URL}/Movie/get_rating?userId=${userId}&showId=${encodeURIComponent(showId)}`,
+      {
+        credentials: 'include',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch rating');
+    }
+
+    const rating = await response.json();
+    return rating ?? null;
+  } catch (error) {
+    console.error('Error fetching user rating:', error);
+    return null;
+  }
 };
