@@ -1,7 +1,7 @@
 CREDENTIALS for TAS:
 
-admin account: someone@gmail.com
+admin account: callahanmichael@gmail.com
 password: Password123!
 
-user account: callahanmichael@gmail.com
+user account: esmith@hotmail.com
 password: Password123!
