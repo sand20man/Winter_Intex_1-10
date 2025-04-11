@@ -29,9 +29,6 @@ function MoviePage() {
   const [genreLoadedCounts, setGenreLoadedCounts] = useState<
     Record<string, number>
   >({});
-  // const [genreLoadingStates, setGenreLoadingStates] = useState<
-  //   Record<string, boolean>
-  // >({});
   const genreInFlightRef = useRef<Record<string, boolean>>({});
 
   // Fetch recommendations

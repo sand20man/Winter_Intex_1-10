@@ -255,8 +255,8 @@ export const fetchCurrentUser = async () => {
       const errorText = await pingRes.text();
       console.error('PingAuth Fetch failed (non-JSON):', errorText);
       return {
-        name: 'Unknown',
-        userId: 0,
+        name: 'Not Logged In',
+        userId: -1,
       };
     }
 
