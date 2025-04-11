@@ -251,6 +251,8 @@ function MoviePage() {
                   title: m.title,
                   posterUrl: `/Movie Posters/${m.title}.jpg`,
                 }))}
+                genre={selectedGenre} // only for genre carousels
+                onEndReached={handleGenreScroll}
               />
               <div className="flex justify-end mr-4 mt-2">
                 <button

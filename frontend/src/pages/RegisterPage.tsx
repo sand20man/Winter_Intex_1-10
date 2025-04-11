@@ -32,15 +32,22 @@ function Register() {
       setError(['Passwords do not match.']);
     } else {
       try {
-        await registerUser(email, password);
-        setError(['Successful registration. Please log in.']);
+        const res = await registerUser(email, password);
+        console.log('Register success:', res);
+
+        if (!res) {
+          throw new Error('No response from registerUser');
+        }
+
+        // Maybe show a toast or success message before redirect
         navigate('/login');
       } catch (err) {
+        console.error('Registration error:', err);
+
         const errorData = err as { errors?: Record<string, string[]> };
         if (errorData.errors) {
-          // Combine all messages from the server
           const allErrors = Object.values(errorData.errors).flat();
-          setError(allErrors); // You could also map these into <ul> if you prefer
+          setError(allErrors);
         } else {
           setError(['Error registering.']);
         }

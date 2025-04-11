@@ -320,14 +320,17 @@ export const registerUser = async (email: string, password: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ Email: email, Password: password }),
   });
 
-  const data = await response.json();
-
   if (!response.ok) {
-    throw data; // Throw to be caught by the component
+    const errorData = await response.json().catch(() => ({}));
+    throw errorData;
   }
+
+  // Only try to parse JSON if there’s content
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : {};
 
   return data;
 };
