@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import './NavBar.css';
+import SearchBar from './SearchBar';
 import { useEffect, useRef, useState } from 'react';
 import { fetchCurrentUser } from '../api/MovieAPI';
 import LogoutButton from './LogoutButton';
@@ -16,13 +17,13 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  //onSearchChange = () => {},
+  onSearchChange = () => {},
   onHomeClick = () => {}, // ← Add this default so it's defined
   homePageBool = false,
-  //showSearch,
+  showSearch,
   setShowSearch,
-  //searchInput,
-  //setSearchInput,
+  searchInput,
+  setSearchInput,
 }) => {
   const navigate = useNavigate();
   const [name, setName] = useState<string>('Name');
@@ -162,6 +163,44 @@ const Navbar: React.FC<NavbarProps> = ({
         ) : (
           <>
             <div className="navbar-right">
+              {/* Search toggle button */}
+              {/* Search toggle button (only shows when search is hidden) */}
+              {!showSearch && (
+                <button
+                  onClick={() => setShowSearch(true)}
+                  className="search-icon-button"
+                >
+                  <i className="fas fa-search" />
+                </button>
+              )}
+
+              {/* Conditionally render SearchBar and Clear Search */}
+              <div ref={searchRef} className="d-flex align-items-center gap-2">
+                {showSearch && (
+                  <div className="search-container d-flex align-items-center gap-2">
+                    <SearchBar
+                      value={searchInput}
+                      setValue={setSearchInput}
+                      onSearchSubmit={(query) => {
+                        onSearchChange(query);
+                        setShowSearch(true);
+                      }}
+                    />
+
+                    <button
+                      className="clear-search-btn"
+                      onClick={() => {
+                        onSearchChange(null);
+                        setShowSearch(false);
+                        setSearchInput('');
+                      }}
+                    >
+                      Clear Search
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <div className="d-flex align-items-center gap-2">
                 <div className="avatar-icon">
                   <svg
