@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MovieCarousel from '../components/MovieCarousel';
 import Footer from '../components/Footer';
 import Navbar from '../components/NavBar';
@@ -29,6 +29,10 @@ function MoviePage() {
   const [genreLoadedCounts, setGenreLoadedCounts] = useState<
     Record<string, number>
   >({});
+  // const [genreLoadingStates, setGenreLoadingStates] = useState<
+  //   Record<string, boolean>
+  // >({});
+  const genreInFlightRef = useRef<Record<string, boolean>>({});
 
   // Fetch recommendations
   // Fetch all genres once
@@ -137,7 +141,14 @@ function MoviePage() {
   }, [searchQuery]);
 
   const handleGenreScroll = async (genre: string) => {
+    if (genreInFlightRef.current[genre]) {
+      return; // Skip if already loading
+    }
+
+    genreInFlightRef.current[genre] = true;
+
     const alreadyLoaded = genreLoadedCounts[genre] || 0;
+    console.log(`Fetching more movies for ${genre}, skip=${alreadyLoaded}`);
 
     try {
       const newMovies = await fetchGenre(genre, alreadyLoaded);
@@ -158,6 +169,8 @@ function MoviePage() {
       }));
     } catch (error) {
       console.error(`Failed to load more movies for ${genre}`, error);
+    } finally {
+      genreInFlightRef.current[genre] = false;
     }
   };
 
