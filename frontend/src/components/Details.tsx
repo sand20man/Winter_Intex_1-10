@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   fetchCurrentUser,
   fetchSingle,
+  fetchUserRating,
   getContentRecommendations,
   getPosterUrl,
   getRecommendations,
@@ -33,71 +34,80 @@ const Details: React.FC = () => {
     []
   );
   const [userRating, setUserRating] = useState<number>(0);
+  const [userId, setUserId] = useState<number>()
 
   const handleRating = async (newRating: number) => {
     setUserRating(newRating); // optimistic UI update
 
     try {
-      // Get user info from backend
-      const user = await fetchCurrentUser();
-      const userId = user.userId;
-      await submitUserRating(showId!, userId, newRating);
+      if (userId && showId) {
+      await submitUserRating(showId!, userId!, newRating);
+      }
     } catch (err) {
       console.error('Failed to submit rating:', err);
       // Optionally rollback or show toast
     }
   };
 
-  useEffect(() => {
-    if (!showId) return;
+useEffect(() => {
+  if (!showId) return;
 
-    const fetchMovieDetails = async () => {
-      try {
-        const movieData = await fetchSingle(showId);
-        setMovie(movieData);
-      } catch (error) {
-        console.error('Failed to fetch the movie', error);
+  const fetchMovieDetails = async () => {
+    try {
+      const user = await fetchCurrentUser();
+      setUserId(user.userId);
+      const existingRating = await fetchUserRating(user.userId, showId);
+      // console.log("existing rating" , existingRating)
+
+      if (existingRating !== null) {
+        setUserRating(existingRating);
       }
+    } catch (error) {
+      console.error('Failed to fetch user or rating', error);
+    }
 
-      try {
-        setRecommendedMovies([]); // optional but helps UI reset
-        const recData = await getRecommendations(showId);
-        const recIds = [
-          recData.rec1,
-          recData.rec2,
-          recData.rec3,
-          recData.rec4,
-          recData.rec5,
-        ];
-        const recDetails = await Promise.all(
-          recIds.map((id) => fetchSingle(id))
-        );
+    try {
+      const movieData = await fetchSingle(showId);
+      setMovie(movieData);
+    } catch (error) {
+      console.error('Failed to fetch the movie', error);
+    }
 
-        setRecommendedMovies(recDetails);
-      } catch (error) {
-        console.error('Collaborative Filter Recommender issue', error);
-      }
+    try {
+      setRecommendedMovies([]);
+      const recData = await getRecommendations(showId);
+      const recIds = [
+        recData.rec1,
+        recData.rec2,
+        recData.rec3,
+        recData.rec4,
+        recData.rec5,
+      ];
+      const recDetails = await Promise.all(recIds.map((id) => fetchSingle(id)));
+      setRecommendedMovies(recDetails);
+    } catch (error) {
+      console.error('Collaborative Filter Recommender issue', error);
+    }
 
-      try {
-        const contentRecData = await getContentRecommendations(showId);
-        const contentRecIds = Object.entries(contentRecData)
-          .filter(([key]) => key.startsWith('rec'))
-          .map(([, value]) => value as string);
+    try {
+      const contentRecData = await getContentRecommendations(showId);
+      const contentRecIds = Object.entries(contentRecData)
+        .filter(([key]) => key.startsWith('rec'))
+        .map(([, value]) => value as string);
 
-        const contentDetails = await Promise.all(
-          contentRecIds.map(
-            (id) => fetchSingle(id).catch(() => null) // silently skip any failed fetches
-          )
-        );
+      const contentDetails = await Promise.all(
+        contentRecIds.map((id) => fetchSingle(id).catch(() => null))
+      );
 
-        setContentRecommended(contentDetails.filter((m) => m !== null));
-      } catch (error) {
-        console.error('Content Filter Recommender issue', error);
-      }
-    };
+      setContentRecommended(contentDetails.filter((m) => m !== null));
+    } catch (error) {
+      console.error('Content Filter Recommender issue', error);
+    }
+  };
 
-    fetchMovieDetails();
-  }, [showId]);
+  fetchMovieDetails();
+}, [showId]);
+
 
   if (!movie) {
     return <div className="loading">Loading...</div>;
