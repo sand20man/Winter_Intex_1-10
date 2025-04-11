@@ -4,6 +4,7 @@ import SearchBar from './SearchBar';
 import { useEffect, useRef, useState } from 'react';
 import { fetchCurrentUser } from '../api/MovieAPI';
 import LogoutButton from './LogoutButton';
+import { API_URL } from '../config';
 
 interface NavbarProps {
   onSearchChange?: (query: string | null) => void;
@@ -26,6 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const navigate = useNavigate();
   const [name, setName] = useState<string>('Name');
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   const searchRef = useRef<HTMLDivElement>(null); // 👈 for detecting outside clicks
 
@@ -60,6 +62,51 @@ const Navbar: React.FC<NavbarProps> = ({
     loadUser();
   }, []);
 
+  useEffect(() => {
+    const checkRole = async () => {
+      try {
+        let email = '';
+        console.log('Getting users credentials');
+        await fetch(`${API_URL}/pingauth`, {
+          method: 'GET',
+          credentials: 'include',
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            email = data.email;
+            console.log(`Email: ${data.email}`);
+          })
+          .catch((err) => console.error('PingAuth Fetch failed:', err));
+
+        console.log('fetching user role through loops');
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${API_URL}/get-role-by-email?email=${encodedEmail}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
+        console.log('data retrieval...');
+        const data = await response.json();
+        console.log(`data: ${data}`);
+
+        if (data.role === 'admin') {
+          console.log('user is admin');
+          setIsAdmin(true);
+        } else {
+          console.log('user is not admin');
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Error checking roles:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkRole();
+  }, []);
+
   return (
     <>
       <nav className="navbar d-flex justify-content-between align-items-center px-4 py-3">
@@ -89,8 +136,9 @@ const Navbar: React.FC<NavbarProps> = ({
                 Home
               </span>
 
-              <span onClick={() => navigate('/admin')}>Admin</span>
-              <span onClick={() => navigate('/profile')}>Watchlist</span>
+              {isAdmin ? (
+                <span onClick={() => navigate('/admin')}>Admin</span>
+              ) : null}
               <span onClick={() => navigate('/privacy')}>Privacy</span>
             </div>
           )}
