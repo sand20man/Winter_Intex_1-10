@@ -17,13 +17,13 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  onSearchChange = () => {},
+  //onSearchChange = () => {},
   onHomeClick = () => {}, // ← Add this default so it's defined
   homePageBool = false,
-  showSearch,
+  //showSearch,
   setShowSearch,
-  searchInput,
-  setSearchInput,
+  //searchInput,
+  //setSearchInput,
 }) => {
   const navigate = useNavigate();
   const [name, setName] = useState<string>('Name');
