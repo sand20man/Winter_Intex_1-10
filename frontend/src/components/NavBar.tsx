@@ -165,7 +165,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="navbar-right">
               {/* Search toggle button */}
               {/* Search toggle button (only shows when search is hidden) */}
-              {!showSearch && (
+              {showSearch && (
                 <button
                   onClick={() => setShowSearch(true)}
                   className="search-icon-button"

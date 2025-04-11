@@ -6,7 +6,6 @@ import './HomePage.css';
 import { useState } from 'react';
 import HomeCategoryCarousel from '../components/HomeCategoryCarousel';
 
-
 interface SupportedDevice {
   name: string;
   svgPath?: string;

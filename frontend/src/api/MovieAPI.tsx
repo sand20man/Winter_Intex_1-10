@@ -335,7 +335,6 @@ export const registerUser = async (email: string, password: string) => {
   return data;
 };
 
-
 export const fetchUserRating = async (
   userId: number,
   showId: string

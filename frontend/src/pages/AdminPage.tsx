@@ -3,9 +3,9 @@ import Pagination from '../components/Pagination';
 import { Movie } from '../types/Movie';
 import { deleteMovie, fetchMovies } from '../api/MovieAPI';
 import './AdminPage.css';
-import AdminTopBar from '../components/AdminTopBar';
 import NewMovieForm from '../components/NewMovieForm';
 import EditMovieForm from '../components/EditMovieForm';
+import Navbar from '../components/NavBar';
 
 function AdminPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -52,7 +52,14 @@ function AdminPage() {
 
   return (
     <div className="admin-page container-fluid py-4">
-      <AdminTopBar />
+      <Navbar
+        onSearchChange={() => {}}
+        homePageBool={false}
+        showSearch={false}
+        setShowSearch={() => {}}
+        searchInput=""
+        setSearchInput={() => {}}
+      />
 
       <div className="d-flex justify-content-end mb-3">
         {!showForm && (

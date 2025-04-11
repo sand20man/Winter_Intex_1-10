@@ -165,7 +165,7 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<IdentityUser> s
     await signInManager.SignOutAsync();
     context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
     return Results.Ok(new { message = "Logout successful" });
-});//.RequireAuthorization();
+});
 
 async Task SeedRoles(IServiceProvider serviceProvider)
 {
@@ -220,7 +220,7 @@ app.MapGet("/pingauth", async (UserManager<IdentityUser> userManager, ClaimsPrin
         roles = roles,
         claims = allClaims
     });
-});//.RequireAuthorization();
+});
 
 app.MapGet("/get-role-by-email", async (
     [FromQuery] string email,
@@ -255,7 +255,7 @@ app.MapGet("/get-role-by-email", async (
     {
         role = roleName ?? "none"
     });
-});//.RequireAuthorization();
+});
 
 app.MapGet("/get-user-id", async (
     [FromQuery] string email,
