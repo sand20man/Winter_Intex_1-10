@@ -163,34 +163,6 @@ const Navbar: React.FC<NavbarProps> = ({
         ) : (
           <>
             <div className="navbar-right">
-
-              {/* Conditionally render SearchBar and Clear Search */}
-              <div ref={searchRef} className="d-flex align-items-center gap-2">
-                {showSearch && (
-                  <div className="search-container d-flex align-items-center gap-2">
-                    <SearchBar
-                      value={searchInput}
-                      setValue={setSearchInput}
-                      onSearchSubmit={(query) => {
-                        onSearchChange(query);
-                        setShowSearch(true);
-                      }}
-                    />
-
-                    <button
-                      className="clear-search-btn"
-                      onClick={() => {
-                        onSearchChange(null);
-                        setShowSearch(false);
-                        setSearchInput('');
-                      }}
-                    >
-                      Clear Search
-                    </button>
-                  </div>
-                )}
-              </div>
-
               <div className="d-flex align-items-center gap-2">
                 <div className="avatar-icon">
                   <svg
