@@ -163,16 +163,6 @@ const Navbar: React.FC<NavbarProps> = ({
         ) : (
           <>
             <div className="navbar-right">
-              {/* Search toggle button */}
-              {/* Search toggle button (only shows when search is hidden) */}
-              {!showSearch && (
-                <button
-                  onClick={() => setShowSearch(true)}
-                  className="search-icon-button"
-                >
-                  <i className="fas fa-search" />
-                </button>
-              )}
 
               {/* Conditionally render SearchBar and Clear Search */}
               <div ref={searchRef} className="d-flex align-items-center gap-2">
